@@ -59,6 +59,8 @@
 
 #ifdef CONFIG_ARM64
 #define CONFIG_SYS_BOOTM_LEN		SZ_64M
+#else
+#define CONFIG_SYS_BOOTM_LEN		SZ_32M
 #endif
 
 /* Devices */
