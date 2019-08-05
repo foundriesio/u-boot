@@ -59,4 +59,12 @@
 #define CONFIG_SPL_DRIVERS_MISC_SUPPORT
 #endif
 
+/*
+ * If OPTEE_SKIP_LOWLEVEL_INIT is flagged indicate CONFIG_SKIP_LOWLEVEL_INIT and
+ * subsequently skip over reserved a range of reserved low-level bit twiddling.
+ */
+#ifdef CONFIG_OPTEE_SKIP_LOWLEVEL_INIT
+#define CONFIG_SKIP_LOWLEVEL_INIT
+#endif
+
 #endif
