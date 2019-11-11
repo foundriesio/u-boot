@@ -108,6 +108,7 @@ obj-$(CONFIG_$(SPL_TPL_)YMODEM_SUPPORT) += xyzModem.o
 obj-$(CONFIG_$(SPL_TPL_)AVB_VERIFY) += avb_verify.o
 obj-$(CONFIG_$(SPL_TPL_)STACKPROTECTOR) += stackprot.o
 obj-$(CONFIG_SCP03) += scp03.o
+obj-$(CONFIG_$(SPL_)FIOVB) += fiovb.o
 
 obj-$(CONFIG_QFW) += qfw.o
 obj-$(CONFIG_KASLR) += kaslr.o
