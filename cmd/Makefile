@@ -230,6 +230,9 @@ obj-$(CONFIG_CMD_AVB) += avb.o
 # Foundries.IO SCP03
 obj-$(CONFIG_CMD_SCP03) += scp03.o
 
+# Foundries.IO Verified Boot
+obj-$(CONFIG_CMD_FIOVB) += fiovb.o
+
 obj-$(CONFIG_HUSH_SELECTABLE) += cli.o
 
 obj-$(CONFIG_ARM) += arm/
