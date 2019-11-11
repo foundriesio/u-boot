@@ -632,6 +632,22 @@ config SCP03
 	  This option allows U-Boot to enable and or provision SCP03 on an OPTEE
 	  controlled Secured Element.
 
+config FIOVB
+	bool "Build Foundries.IO Verified Boot operations"
+	depends on PARTITION_UUIDS
+	depends on OPTEE
+	help
+	 This option enables compilation of Foundries.IO verified boot
+	 operations
+
+config SPL_FIOVB
+	bool "Build Foundries.IO Verified Boot operations"
+	depends on PARTITION_UUIDS
+	depends on OPTEE
+	help
+	 This option enables compilation of Foundries.IO verified boot
+	 operations
+
 config SPL_HASH
 	bool # "Support hashing API (SHA1, SHA256, etc.)"
 	help
