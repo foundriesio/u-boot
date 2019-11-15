@@ -13,6 +13,8 @@
 #include <asm/arch/imx-regs.h>
 #include "imx_env.h"
 
+#define CONFIG_FPGA
+
 /* Using ULP WDOG for reset */
 #define WDOG_BASE_ADDR		 WDG1_RBASE
 
