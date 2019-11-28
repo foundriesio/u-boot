@@ -11,6 +11,7 @@
 #include "imagetool.h"
 #include <image.h>
 #include "imximage.h"
+#include <generated/autoconf.h>
 
 #define UNDEFINED 0xFFFFFFFF
 
@@ -524,8 +525,13 @@ static void print_hdr_v2(struct imx_header *imx_hdr)
 			printf("HAB Blocks:   0x%08x 0x%08x 0x%08x\n",
 			       (uint32_t)fhdr_v2->self, 0,
 			       (uint32_t)(fhdr_v2->csf - fhdr_v2->self));
+#ifndef CONFIG_MX7ULP
 			printf("DCD Blocks:   0x00910000 0x%08x 0x%08x\n",
 			       offs, be16_to_cpu(dcdlen));
+#else
+			printf("DCD Blocks:   0x2f010000 0x%08x 0x%08x\n",
+			       offs, be16_to_cpu(dcdlen));
+#endif
 		}
 	} else {
 		imx_header_v2_t *next_hdr_v2;
