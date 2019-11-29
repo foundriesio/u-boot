@@ -12,93 +12,85 @@
 #include <asm/system.h>
 #include <asm/arch/clock.h>
 #include <asm/arch/sys_proto.h>
+#include <asm/mach-imx/hab.h>
 
-static void process_event_record(uint8_t *event_data, size_t bytes)
+#ifdef CONFIG_MX7ULP
+#define SRK_FUSE_BANK		(5)
+#define SRK_FIRST_FUSE		(0)
+#define SRK_NBR_FUSE		(8)
+#define SECURE_FUSE_BANK	(29)
+#define SECURE_FUSE_WORD	(6)
+#define SECURE_FUSE_VALUE	(0x80000000)
+#else
+#error "SoC not supported"
+#endif
+
+static hab_rvt_report_status_t *hab_check;
+
+static int hab_status(void)
 {
-	struct record *rec = (struct record *)event_data;
-
-	printf("\n\n%s", sts_str[get_idx(hab_statuses, rec->contents[0])]);
-	printf("%s", rsn_str[get_idx(hab_reasons, rec->contents[1])]);
-	printf("%s", ctx_str[get_idx(hab_contexts, rec->contents[2])]);
-	printf("%s", eng_str[get_idx(hab_engines, rec->contents[3])]);
-}
-
-
-static void display_event(uint8_t *event_data, size_t bytes)
-{
-	uint32_t i;
-
-	if (!(event_data && bytes > 0))
-		return;
-
-	for (i = 0; i < bytes; i++) {
-		if (i == 0)
-			printf("\t0x%02x", event_data[i]);
-		else if ((i % 8) == 0)
-			printf("\n\t0x%02x", event_data[i]);
-		else
-			printf(" 0x%02x", event_data[i]);
-	}
-
-	process_event_record(event_data, bytes);
-}
-
-static int get_hab_status(void)
-{
-	uint32_t index = 0; /* Loop index */
-	uint8_t event_data[128]; /* Event data buffer */
-	size_t bytes = sizeof(event_data); /* Event size in bytes */
+	hab_check = (hab_rvt_report_status_t *) HAB_RVT_REPORT_STATUS;
 	enum hab_config config = 0;
 	enum hab_state state = 0;
-	hab_rvt_report_event_t *hab_rvt_report_event;
-	hab_rvt_report_status_t *hab_rvt_report_status;
 
-	hab_rvt_report_event = (hab_rvt_report_event_t *)HAB_RVT_REPORT_EVENT;
-	hab_rvt_report_status =
-			(hab_rvt_report_status_t *)HAB_RVT_REPORT_STATUS;
-
-	if (imx_hab_is_enabled())
-		puts("\nSecure boot enabled\n");
-	else
-		puts("\nSecure boot disabled\n");
-
-	/* Check HAB status */
-	if (hab_rvt_report_status(&config, &state) != HAB_SUCCESS) {
-		printf("\nHAB Configuration: 0x%02x, HAB State: 0x%02x\n",
-		       config, state);
-
-		/* Display HAB events */
-		while (hab_rvt_report_event(HAB_STS_ANY, index, event_data,
-					&bytes) == HAB_SUCCESS) {
-			puts("\n");
-			printf("--------- HAB Event %d -----------------\n",
-			       index + 1);
-			puts("event data:\n");
-			display_event(event_data, bytes);
-			puts("\n");
-			bytes = sizeof(event_data);
-			index++;
-		}
+	if (hab_check(&config, &state) != HAB_SUCCESS) {
+		puts("HAB events active\n");
+		return 1;
 	}
-	/* Display message if no HAB events are found */
-	else {
-		printf("\nHAB Configuration: 0x%02x, HAB State: 0x%02x\n",
-		       config, state);
-		puts("No HAB Events Found!\n\n");
-	}
+
 	return 0;
 }
 
-static int do_fiohab_can_close(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+static int do_fiohab_close(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
+	uint32_t fuse, fuse_env;
+	char fuse_name[20];
+	int i, j;
+	int ret;
+
 	if ((argc != 1)) {
 		cmd_usage(cmdtp);
 		return 1;
 	}
 
-	get_hab_status();
+	if (imx_hab_is_enabled()) {
+		printf("secure boot already enabled\n");
+		return 0;
+	}
+
+	if (hab_status())
+		return 1;
+
+	for (i = SRK_FIRST_FUSE, j = 0 ; i < SRK_NBR_FUSE; i++, j++) {
+		ret = fuse_read(SRK_FUSE_BANK, i, &fuse);
+		if (ret) {
+			printf("Secure boot fuse read error\n");
+			return ret;
+		}
+
+		sprintf(fuse_name, "srk_%d", i);
+
+		fuse_env = (uint32_t) env_get_hex(fuse_name, 0);
+		if (!fuse_env) {
+			printf("%s not in environment\n", fuse_name);
+			return 1;
+		}
+
+		if (fuse_env != fuse) {
+			printf("%s - programmed: 0x%x != expected: 0x%x \n",
+				fuse_name, fuse, fuse_env);
+			return 1;
+		}
+	}
+
+	ret = fuse_prog(SECURE_FUSE_BANK, SECURE_FUSE_WORD, SECURE_FUSE_VAL);
+	if (ret) {
+		printf("Error writing the Secure Fuse\n");
+		return 1;
+	}
+
 	return 0;
 }
 
-U_BOOT_CMD(fiohab_can_close,  CONFIG_SYS_MAXARGS, 1, do_fiohab_can_close,
-	   "HAB and Fuses ready to close the board","");
+U_BOOT_CMD(fiohab_close, CONFIG_SYS_MAXARGS, 1, do_fiohab_close,
+	   "Close the board for HAB","");
