@@ -14,6 +14,66 @@
 #include <asm/arch/sys_proto.h>
 #include <asm/mach-imx/hab.h>
 
+#if defined(CONFIG_FIOVB) && !defined(CONFIG_SPL_BUILD)
+#include <fiovb.h>
+#include <mmc.h>
+
+static struct mmc *init_mmc_device(int dev, bool force_init)
+{
+	struct mmc *mmc;
+
+	mmc = find_mmc_device(dev);
+	if (!mmc) {
+		printf("no mmc device at slot %x\n", dev);
+		return NULL;
+	}
+
+	if (mmc_init(mmc)) {
+		printf("cant initialize mmc at slot %x\n", dev);
+		return NULL;
+	}
+
+	return mmc;
+}
+
+static int fiovb_provisioned(void)
+{
+	char len_str[32] = { '\0' };
+	struct fiovb_ops *sec;
+	int ret;
+
+	if (!init_mmc_device(0, false)) {
+		printf("Cant init MMC - RPMB not available\n");
+		return -1;
+	}
+
+	sec = fiovb_ops_alloc(0);
+	if (!sec) {
+		printf("Not enough memory to allocate ops\n");
+		return -ENOMEM;
+	}
+
+	snprintf(len_str, sizeof(len_str), "%ld", (unsigned long) 0);
+	ret = sec->write_persistent_value(sec, "m4size", strlen(len_str) + 1,
+					 (uint8_t *) len_str);
+	fiovb_ops_free(sec);
+
+	/* if the RPMB is accessible, then we can't close the device */
+	if (ret == FIOVB_IO_RESULT_OK) {
+		printf("Error, rpmb provisioned with test keys\n");
+		return -1;
+	}
+
+	return 0;
+}
+#else
+static int fiovb_provisioned(void)
+{
+	printf("RPMB provisioned check stubbed out !!\n");
+	return 0;
+}
+#endif
+
 #ifdef CONFIG_MX7ULP
 #define SRK_FUSE_LIST								\
 { 5, 0 }, { 5, 1 }, { 5, 2}, { 5, 3 }, { 5, 4 }, { 5, 5}, { 5, 6 }, { 5 ,7 },	\
@@ -34,7 +94,7 @@ static int hab_status(void)
 	enum hab_state state = 0;
 
 	if (hab_check(&config, &state) != HAB_SUCCESS) {
-		printf("HAB events active\n");
+		printf("HAB events active error\n");
 		return 1;
 	}
 
@@ -43,7 +103,11 @@ static int hab_status(void)
 
 /* The fuses must have been programmed and their values set in the environment.
  * The fuse read operation returns a shadow value so a board reset is required
- * after the SRK fuses have been written
+ * after the SRK fuses have been written.
+ *
+ * On CAAM enabled boards (imx7, imx6 and others), the board should not be closed
+ * if RPMB keys have been provisioned as it would render it unavailable
+ * afterwards
  */
 static int do_fiohab_close(cmd_tbl_t *cmdtp, int flag, int argc,
 			   char *const argv[])
@@ -61,11 +125,18 @@ static int do_fiohab_close(cmd_tbl_t *cmdtp, int flag, int argc,
 		return 1;
 	}
 
+	/* if secure boot is already enabled, there is nothing to do */
 	if (imx_hab_is_enabled()) {
 		printf("secure boot already enabled\n");
 		return 0;
 	}
 
+	/* if RPMB can be accessed, we cant close the board */
+	ret = fiovb_provisioned();
+	if (ret)
+		return 1;
+
+	/* if there are pending HAB errors, we cant close the board */
 	if (hab_status())
 		return 1;
 
@@ -76,6 +147,10 @@ static int do_fiohab_close(cmd_tbl_t *cmdtp, int flag, int argc,
 			return 1;
 		}
 
+		/**
+		 * if the fuses are not in in the environemnt or hold the wrong
+		 * values, then we cant close the board
+		 */
 		sprintf(fuse_name, "srk_%d", i);
 		fuse_env = (uint32_t) env_get_hex(fuse_name, 0);
 		if (!fuse_env) {
