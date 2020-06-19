@@ -1,0 +1,14 @@
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Copyright 2020 Foundries.io
+ */
+
+&{/soc} {
+	u-boot,dm-pre-reloc;
+	u-boot,dm-spl;
+};
+
+&aips3 {
+	u-boot,dm-pre-reloc;
+	u-boot,dm-spl;
+};
