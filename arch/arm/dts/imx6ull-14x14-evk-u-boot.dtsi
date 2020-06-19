@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright 2022-2023 NXP
+ * Copyright 2020 Foundries.io
  */
 
 &{/aliases} {
@@ -13,4 +14,14 @@
 
 &pinctrl_uart1 {
 	u-boot,dm-pre-reloc;
+};
+
+&{/soc} {
+	u-boot,dm-pre-reloc;
+	u-boot,dm-spl;
+};
+
+&aips3 {
+	u-boot,dm-pre-reloc;
+	u-boot,dm-spl;
 };
