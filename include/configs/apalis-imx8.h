@@ -44,11 +44,26 @@
 #define CONFIG_NETMASK			255.255.255.0
 #define CONFIG_SERVERIP			192.168.10.1
 
+/**
+ * SYS_SDRAM_BASE	0x80000000	0.125MiB
+ * SYS_TEXT_BASE	0x80020000	2.375MiB
+ * kernel_addr_r	0x80280000	45.5MiB
+ * fdt_addr_r		0x83000000	1MiB
+ * scriptaddr		0x83100000	15MiB
+ * __RESERVED__		0x84000000	48MiB
+ * loadaddr		0x87000000	48MiB
+ * ramdisk_addr_r	0x8a000000	288MiB (to hdp_addr)
+ * SYS_MEMTEST_START	0x90000000
+ * hdp_addr		0x9c000000
+ * SYS_MEMTEST_END	0xC0000000
+ */
 #define MEM_LAYOUT_ENV_SETTINGS \
-	"fdt_addr_r=0x84000000\0" \
-	"kernel_addr_r=0x82000000\0" \
-	"ramdisk_addr_r=0x86400000\0" \
-	"scriptaddr=0x87000000\0"
+	"fdt_addr_r=0x83000000\0" \
+	"hdp_addr=0x9c000000\0" \
+	"initrd_addr=0x83800000\0" \
+	"kernel_addr_r=0x80280000\0" \
+	"ramdisk_addr_r=0x8a000000\0" \
+	"scriptaddr=0x83100000\0"
 
 /* Boot M4 */
 #define M4_BOOT_ENV \
@@ -76,8 +91,8 @@
 #define AHAB_ENV "sec_boot=no\0"
 #endif
 
-#define FDT_FILE			"fsl-imx8qm-apalis-v1.1-eval.dtb"
-#define FDT_FILE_V1_0			"fsl-imx8qm-apalis-eval.dtb"
+#define FDT_FILE			"imx8qm-apalis-v1.1-eval.dtb"
+#define FDT_FILE_V1_0			"imx8qm-apalis-eval.dtb"
 
 /* Initial environment variables */
 #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -90,13 +105,10 @@
 	"script=boot.scr\0" \
 	"boot_script_dhcp=boot.scr\0" \
 	"console=ttyLP1 earlycon\0" \
-	"fdt_addr=0x83000000\0"	\
 	"fdt_high=0xffffffffffffffff\0" \
 	"boot_fdt=try\0" \
 	"fdtfile=" FDT_FILE "\0" \
 	"finduuid=part uuid mmc ${mmcdev}:2 uuid\0" \
-	"initrd_addr=0x83800000\0" \
-	"hdp_addr=0x84000000\0" \
 	"hdp_file=hdmitxfw.bin\0" \
 	"loadhdp=fatload mmc ${mmcdev}:${mmcpart} ${hdp_addr} ${hdp_file}\0" \
 	"mmcautodetect=yes\0" \
@@ -107,8 +119,8 @@
 	"netargs=setenv bootargs console=${console},${baudrate} " \
 		"root=/dev/nfs ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp" \
 		"\0" \
-	"nfsboot=run netargs; dhcp ${loadaddr} ${boot_file}; tftp ${fdt_addr} " \
-		"apalis-imx8/${fdt_file}; booti ${loadaddr} - ${fdt_addr}\0" \
+	"nfsboot=run netargs; dhcp ${loadaddr} ${boot_file}; tftp ${fdt_addr_r} " \
+		"apalis-imx8/${fdtfile}; booti ${loadaddr} - ${fdt_addr_r}\0" \
 	"panel=NULL\0" \
 	"update_uboot=askenv confirm Did you load u-boot-dtb.imx (y/N)?; " \
 		"if test \"$confirm\" = \"y\"; then " \
@@ -120,7 +132,6 @@
 	"defargs=pci=nomsi"
 
 /* Link Definitions */
-
 #define CONFIG_SYS_INIT_SP_ADDR		0x80200000
 
 /* On Apalis iMX8 USDHC1 is eMMC, USDHC2 is 8-bit and USDHC3 is 4-bit MMC/SD */
