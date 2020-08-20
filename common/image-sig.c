@@ -19,6 +19,7 @@ DECLARE_GLOBAL_DATA_PTR;
 #include <u-boot/ecdsa.h>
 #include <u-boot/rsa.h>
 #include <u-boot/hash-checksum.h>
+#include <linux/kconfig.h>
 
 #define IMAGE_MAX_HASHED_NODES		100
 
