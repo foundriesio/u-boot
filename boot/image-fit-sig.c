@@ -15,6 +15,7 @@ DECLARE_GLOBAL_DATA_PTR;
 #endif /* !USE_HOSTCC*/
 #include <fdt_region.h>
 #include <image.h>
+#include <linux/kconfig.h>
 #include <u-boot/rsa.h>
 #include <u-boot/hash-checksum.h>
 
@@ -196,8 +197,15 @@ int fit_image_verify_required_sigs(const void *fit, int image_noffset,
 	*no_sigsp = 1;
 	key_node = fdt_subnode_offset(key_blob, 0, FIT_SIG_NODENAME);
 	if (key_node < 0) {
-		debug("%s: No signature node found: %s\n", __func__,
-		      fdt_strerror(key_node));
+		if (IS_ENABLED(CONFIG_FIT_SIGNATURE_STRICT)) {
+			printf("%s: No signature node found: %s\n", __func__,
+			       fdt_strerror(key_node));
+			return -1;
+		} else {
+			debug("%s: No signature node found: %s\n", __func__,
+			      fdt_strerror(key_node));
+			return 0;
+		}
 		return 0;
 	}
 
@@ -490,8 +498,15 @@ static int fit_config_verify_required_keys(const void *fit, int conf_noffset,
 	/* Work out what we need to verify */
 	key_node = fdt_subnode_offset(key_blob, 0, FIT_SIG_NODENAME);
 	if (key_node < 0) {
-		debug("%s: No signature node found: %s\n", __func__,
-		      fdt_strerror(key_node));
+		if (IS_ENABLED(CONFIG_FIT_SIGNATURE_STRICT)) {
+			printf("%s: No signature node found: %s\n", __func__,
+			       fdt_strerror(key_node));
+			return -1;
+		} else {
+			debug("%s: No signature node found: %s\n", __func__,
+			      fdt_strerror(key_node));
+			return 0;
+		}
 		return 0;
 	}
 
