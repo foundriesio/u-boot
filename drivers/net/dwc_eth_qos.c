@@ -43,6 +43,7 @@
 #include <net.h>
 #include <netdev.h>
 #include <phy.h>
+#include <power/regulator.h>
 #include <reset.h>
 #include <wait_bit.h>
 #include <asm/cache.h>
@@ -1308,6 +1309,16 @@ static int eqos_probe_resources_core(struct udevice *dev)
 	eqos->config->ops->eqos_inval_buffer(eqos->rx_dma_buf,
 			EQOS_MAX_PACKET_SIZE * EQOS_DESCRIPTORS_RX);
 
+#if CONFIG_IS_ENABLED(DM_REGULATOR)
+	if (eqos->phy_supply) {
+		ret = regulator_set_enable(eqos->phy_supply, true);
+		if (ret) {
+			printf("%s: Error enabling phy supply\n", dev->name);
+			goto err_free_rx_dma_buf;
+		}
+	}
+#endif
+
 	debug("%s: OK\n", __func__);
 	return 0;
 
@@ -1330,6 +1341,11 @@ static int eqos_remove_resources_core(struct udevice *dev)
 	struct eqos_priv *eqos = dev_get_priv(dev);
 
 	debug("%s(dev=%p):\n", __func__, dev);
+
+#if CONFIG_IS_ENABLED(DM_REGULATOR)
+	if (eqos->phy_supply)
+		regulator_set_enable(eqos->phy_supply, false);
+#endif
 
 	free(eqos->rx_pkt);
 	free(eqos->rx_dma_buf);
@@ -1542,6 +1558,10 @@ static int eqos_probe(struct udevice *dev)
 	eqos->tegra186_regs = (void *)(eqos->regs + EQOS_TEGRA186_REGS_BASE);
 
 	eqos->max_speed = dev_read_u32_default(dev, "max-speed", 0);
+
+#if CONFIG_IS_ENABLED(DM_REGULATOR)
+	device_get_supply_regulator(dev, "phy-supply", &eqos->phy_supply);
+#endif
 
 	ret = eqos_probe_resources_core(dev);
 	if (ret < 0) {
