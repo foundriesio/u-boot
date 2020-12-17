@@ -58,7 +58,7 @@ U_BOOT_DRVINFO(imx6_thermal) = {
 };
 #endif
 
-#if defined(CONFIG_IMX_HAB)
+#if CONFIG_IS_ENABLED(IMX_HAB)
 struct imx_sec_config_fuse_t const imx_sec_config_fuse = {
 	.bank = 0,
 	.word = 6,
