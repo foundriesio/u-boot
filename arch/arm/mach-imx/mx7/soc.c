@@ -128,7 +128,7 @@ static void isolate_resource(void)
 }
 #endif
 
-#if defined(CONFIG_IMX_HAB) || defined(CONFIG_AVB_ATX)
+#if CONFIG_IS_ENABLED(IMX_HAB) || defined(CONFIG_AVB_ATX)
 struct imx_sec_config_fuse_t const imx_sec_config_fuse = {
 	.bank = 1,
 	.word = 3,
