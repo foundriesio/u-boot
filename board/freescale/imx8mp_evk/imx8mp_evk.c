@@ -111,7 +111,7 @@ int ft_board_setup(void *blob, struct bd_info *bd)
 }
 #endif
 
-#ifdef CONFIG_USB_TCPC
+#if defined(CONFIG_USB_TCPC) && !defined(CONFIG_SPL_BUILD)
 struct tcpc_port port1;
 struct tcpc_port port2;
 
@@ -341,7 +341,7 @@ int board_usb_init(int index, enum usb_init_type init)
 	imx8m_usb_power(index, true);
 
 	if (index == 0 && init == USB_INIT_DEVICE) {
-#ifdef CONFIG_USB_TCPC
+#if defined(CONFIG_USB_TCPC) && !defined(CONFIG_SPL_BUILD)
 		ret = tcpc_setup_ufp_mode(&port1);
 		if (ret)
 			return ret;
@@ -349,7 +349,7 @@ int board_usb_init(int index, enum usb_init_type init)
 		dwc3_nxp_usb_phy_init(&dwc3_device_data);
 		return dwc3_uboot_init(&dwc3_device_data);
 	} else if (index == 0 && init == USB_INIT_HOST) {
-#ifdef CONFIG_USB_TCPC
+#if defined(CONFIG_USB_TCPC) && !defined(CONFIG_SPL_BUILD)
 		ret = tcpc_setup_dfp_mode(&port1);
 #endif
 		return ret;
@@ -368,7 +368,7 @@ int board_usb_cleanup(int index, enum usb_init_type init)
 	if (index == 0 && init == USB_INIT_DEVICE) {
 		dwc3_uboot_exit(index);
 	} else if (index == 0 && init == USB_INIT_HOST) {
-#ifdef CONFIG_USB_TCPC
+#if defined(CONFIG_USB_TCPC) && !defined(CONFIG_SPL_BUILD)
 		ret = tcpc_disable_src_vbus(&port1);
 #endif
 	} else if (index == 1 && init == USB_INIT_HOST) {
@@ -381,7 +381,7 @@ int board_usb_cleanup(int index, enum usb_init_type init)
 	return ret;
 }
 
-#ifdef CONFIG_USB_TCPC
+#if defined(CONFIG_USB_TCPC) && !defined(CONFIG_SPL_BUILD)
 /* Not used so far */
 int board_typec_get_mode(int index)
 {
@@ -444,7 +444,7 @@ int board_init(void)
 {
 	struct arm_smccc_res res;
 
-#ifdef CONFIG_USB_TCPC
+#if defined(CONFIG_USB_TCPC) && !defined(CONFIG_SPL_BUILD)
 	setup_typec();
 #endif
 
