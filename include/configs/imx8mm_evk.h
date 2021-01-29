@@ -28,6 +28,7 @@
 #define CFG_MALLOC_F_ADDR		0x930000
 /* For RAW image gives a error info not panic */
 
+#undef CONFIG_SPL_DM_I2C
 #endif
 
 #define PHY_ANEG_TIMEOUT 20000
