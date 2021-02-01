@@ -245,12 +245,6 @@
 #define CONFIG_SYS_NAND_USE_FLASH_BBT
 #endif /* CONFIG_NAND_MXS */
 
-/* USB configs */
-#ifndef CONFIG_SPL_BUILD
-#define CONFIG_USBD_HS
-
-#endif
-
 #define CONFIG_USB_GADGET_VBUS_DRAW 2
 
 #define CONFIG_MXC_USB_PORTSC  (PORT_PTS_UTMI | PORT_PTS_PTW)
