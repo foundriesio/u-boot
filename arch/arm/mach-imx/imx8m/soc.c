@@ -743,6 +743,13 @@ int spl_mmc_emmc_boot_partition(struct mmc *mmc)
 }
 #endif
 
+int boot_mode_getprisec(void)
+{
+	struct src *psrc = (struct src *)SRC_BASE_ADDR;
+
+	return !!(readl(&psrc->gpr10) & SRC_GPR10_PERSIST_SECONDARY_BOOT);
+}
+
 bool is_usb_boot(void)
 {
 	return get_boot_device() == USB_BOOT;
