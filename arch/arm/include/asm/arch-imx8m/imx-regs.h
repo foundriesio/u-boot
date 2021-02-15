@@ -281,6 +281,8 @@
 
 #define SNVS_HPSR              (SNVS_BASE_ADDR + 0x14)
 
+#define SRC_GPR10_PERSIST_SECONDARY_BOOT	BIT(30)
+
 struct iomuxc_gpr_base_regs {
 	u32 gpr[48];
 };
