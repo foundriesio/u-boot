@@ -10,6 +10,7 @@
 #include <linux/stringify.h>
 #include <asm/arch/imx-regs.h>
 #include "imx_env.h"
+#include "imx8m_secondary.h"
 
 #define UBOOT_ITB_OFFSET			0x57C00
 #define FSPI_CONF_BLOCK_SIZE		0x1000
@@ -19,7 +20,8 @@
 #define CFG_SYS_UBOOT_BASE  \
 	(QSPI0_AMBA_BASE + UBOOT_ITB_OFFSET_FSPI)
 #else
-#define CFG_SYS_UBOOT_BASE	\
+
+#define CONFIG_SYS_UBOOT_BASE	\
 	(QSPI0_AMBA_BASE + CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR * 512)
 #endif
 
