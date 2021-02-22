@@ -18,6 +18,11 @@
 #define CFG_MALLOC_F_ADDR		0x182000
 /* For RAW image gives a error info not panic */
 
+
+#undef CONFIG_DM_PMIC
+#undef CONFIG_DM_PMIC_PFUZE100
+#undef CONFIG_SPL_DM_I2C
+
 #define CFG_POWER_PFUZE100_I2C_ADDR 0x08
 #endif
 
