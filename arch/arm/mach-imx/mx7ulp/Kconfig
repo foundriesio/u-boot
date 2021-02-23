@@ -12,7 +12,7 @@ config MX7ULP
 	select ARCH_SUPPORT_PSCI if !OPTEE
 	select CPU_V7_HAS_NONSEC if !OPTEE
 	select CPU_V7_HAS_VIRT if !OPTEE
-	select HAS_CAAM
+	select HAS_CAAM if !OPTEE
 	bool
 
 config IMX_M4_BIND
