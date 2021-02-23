@@ -12,3 +12,8 @@
 	u-boot,dm-pre-reloc;
 	u-boot,dm-spl;
 };
+
+&rngb {
+        u-boot,dm-pre-reloc;
+        u-boot,dm-spl;
+};
