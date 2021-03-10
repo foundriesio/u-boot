@@ -92,6 +92,7 @@ obj-$(CONFIG_CMD_NANDBCB) += cmd_nandbcb.o
 obj-$(CONFIG_CMD_QSPIHDR) += cmd_qspihdr.o
 obj-$(CONFIG_CMD_FSPINAND) += cmd_fspinand.o
 obj-$(CONFIG_IMX_VSERVICE) += imx_vservice.o
+obj-${CONFIG_CMD_SECONDARY_BOOT} += imx_secondary_boot.o
 endif
 
 ifeq ($(CONFIG_SPL_BUILD),y)
