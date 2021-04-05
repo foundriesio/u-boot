@@ -15,6 +15,7 @@ void restore_boot_params(void);
 int imx8m_usb_power(int usb_id, bool on);
 extern unsigned long rom_pointer[];
 int boot_mode_getprisec(void);
+int boot_mode_is_closed(void);
 void boot_mode_enable_secondary(bool enable);
 bool is_usb_boot(void);
 #endif
