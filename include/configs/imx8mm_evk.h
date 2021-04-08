@@ -41,7 +41,6 @@
 
 #if defined(CONFIG_IMX8M_LPDDR4) && defined(CONFIG_TARGET_IMX8MM_EVK)
 #define CONFIG_POWER_PCA9450
-#else
 #define CONFIG_POWER_BD71837
 #endif
 #undef CONFIG_SPL_DM_I2C
