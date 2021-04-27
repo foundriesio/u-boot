@@ -93,6 +93,8 @@ void board_init_f(ulong dummy)
 	board_init_r(NULL, 0);
 }
 
+#ifndef CONFIG_SPL_SYSRESET
 void reset_cpu(ulong addr)
 {
 }
+#endif
