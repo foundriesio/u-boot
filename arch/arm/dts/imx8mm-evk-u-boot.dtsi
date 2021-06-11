@@ -140,6 +140,10 @@
 	assigned-clock-parents = <&clk IMX8MM_SYS_PLL1_400M>;
 };
 
+&wdog1 {
+	u-boot,dm-spl;
+};
+
 &i2c1 {
 	u-boot,dm-spl;
 };
@@ -149,6 +153,10 @@
 };
 
 &{/soc@0/bus@30800000/i2c@30a20000/pmic@4b/regulators} {
+	u-boot,dm-spl;
+};
+
+&pinctrl_wdog {
 	u-boot,dm-spl;
 };
 
