@@ -85,3 +85,10 @@ config TDX_CFG_BLOCK_EXTRA
 	  adapter EEPROMs.
 
 endif
+
+config TDX_EASY_INSTALLER
+	bool "Use Toradex Easy Installer specific options."
+	help
+	  Use Toradex Easy Installer specific options. Currently this is
+	  needed to choose the correct ubiboot options and use correct
+	  name of distro boot script for Easy Installer.

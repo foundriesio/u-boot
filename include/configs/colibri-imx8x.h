@@ -29,6 +29,7 @@
 #define CONFIG_IPADDR			192.168.10.2
 #define CONFIG_NETMASK			255.255.255.0
 #define CONFIG_SERVERIP			192.168.10.1
+#define CONFIG_ROOTPATH			"/srv/nfs"
 
 /**
  * SYS_SDRAM_BASE	0x80000000	0.125MiB
@@ -71,13 +72,21 @@
 #define FDT_FILE			"imx8qxp-colibri-eval-v3.dtb"
 
 #include <config_distro_bootcmd.h>
+
+#if defined(CONFIG_TDX_EASY_INSTALLER)
+#  define BOOT_SCRIPT	"boot-tezi.scr"
+#else
+#  define BOOT_SCRIPT	"boot.scr"
+#endif
+
 /* Initial environment variables */
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	BOOTENV \
 	AHAB_ENV \
 	M4_BOOT_ENV \
 	MEM_LAYOUT_ENV_SETTINGS \
-	"boot_script_dhcp=boot.scr\0" \
+	"boot_scripts=" BOOT_SCRIPT "\0" \
+	"boot_script_dhcp=" BOOT_SCRIPT "\0" \
 	"bootcmd_mfg=fastboot 0\0" \
 	"console=ttyLP3,115200 earlycon=lpuart32,0x5a090000,115200\0" \
 	"fdt_addr=0x83000000\0"	\
@@ -91,7 +100,6 @@
 	"mmcdev=" __stringify(CONFIG_SYS_MMC_ENV_DEV) "\0" \
 	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
 	"panel=NULL\0" \
-	"script=boot.scr\0" \
 	"setup=run mmcargs\0" \
 	"update_uboot=askenv confirm Did you load u-boot-dtb.imx (y/N)?; " \
 		"if test \"$confirm\" = \"y\"; then " \
