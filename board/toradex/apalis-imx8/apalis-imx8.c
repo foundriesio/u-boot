@@ -219,6 +219,7 @@ static pcb_rev_t get_pcb_revision(void)
 	}
 }
 
+#ifndef CONFIG_SPL_BUILD
 static void select_dt_from_module_version(void)
 {
 	char *fdt_env = env_get("fdtfile");
@@ -238,7 +239,9 @@ static void select_dt_from_module_version(void)
 			break;
 	}
 }
+#endif
 
+#ifndef CONFIG_SPL_BUILD
 static int do_select_dt_from_module_version(cmd_tbl_t *cmdtp, int flag, int argc,
 		       char * const argv[]) {
 	select_dt_from_module_version();
@@ -249,6 +252,7 @@ U_BOOT_CMD(
 	select_dt_from_module_version, CONFIG_SYS_MAXARGS, 1, do_select_dt_from_module_version,
 	"\n", "    - select devicetree from module version"
 );
+#endif
 
 int board_init(void)
 {
@@ -268,7 +272,7 @@ int board_init(void)
 	return 0;
 }
 /* todo: With that function in ther is no console output in linux, drop for now */
-#if 0
+#ifdef CONFIG_SPL_BUILD
 void board_quiesce_devices(void)
 {
 	const char *power_on_devices[] = {
@@ -339,7 +343,10 @@ int board_late_init(void)
 #endif
 #endif /* CONFIG_IMX_LOAD_HDMI_FIMRWARE_RX || CONFIG_IMX_LOAD_HDMI_FIMRWARE_TX */
 
+
+#ifndef CONFIG_SPL_BUILD
 	select_dt_from_module_version();
+#endif
 
 	return 0;
 }
