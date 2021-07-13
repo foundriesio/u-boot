@@ -439,6 +439,10 @@ int board_init(void)
 
 #if defined(CONFIG_USB_TCPC) && !defined(CONFIG_SPL_BUILD)
 	setup_typec();
+
+	/* Enable USB power default */
+	imx8m_usb_power(0, true);
+	imx8m_usb_power(1, true);
 #endif
 
 	if (CONFIG_IS_ENABLED(FEC_MXC)) {
