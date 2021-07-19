@@ -315,6 +315,7 @@
 
 /* Size of malloc() pool */
 #define CONFIG_SYS_MALLOC_LEN		((CONFIG_ENV_SIZE + (32 * 1024)) * 1024)
+#define CONFIG_SYS_BOOTM_LEN		SZ_64M
 
 #define CONFIG_NR_DRAM_BANKS		4
 #if defined(CONFIG_TARGET_IMX8QM_MEK_A53_ONLY)
