@@ -48,8 +48,6 @@
 /* Flat Device Tree Definitions */
 #define CONFIG_OF_BOARD_SETUP
 
-#undef CONFIG_CMD_EXPORTENV
-#undef CONFIG_CMD_IMPORTENV
 #undef CONFIG_CMD_IMLS
 
 #undef CONFIG_CMD_CRC32
@@ -164,6 +162,7 @@
 	XEN_BOOT_ENV \
 	JAILHOUSE_ENV\
 	AHAB_ENV \
+	"scriptaddr=0x83100000\0" \
 	"script=boot.scr\0" \
 	"image=Image\0" \
 	"splashimage=0x9e000000\0" \
@@ -244,6 +243,7 @@
 			"fi;" \
 		"fi;\0"
 
+#ifndef CONFIG_BOOTCOMMAND
 #define CONFIG_BOOTCOMMAND \
 	   "mmc dev ${mmcdev}; if mmc rescan; then " \
 		   "if run loadbootscript; then " \
@@ -262,9 +262,10 @@
 			 "fi; " \
 		   "fi; " \
 	   "else booti ${loadaddr} - ${fdt_addr}; fi"
+#endif /* CONFIG_BOOTCOMMAND */
 
 /* Link Definitions */
-#define CONFIG_LOADADDR			0x80280000
+#define CONFIG_LOADADDR			0x87000000
 
 #define CONFIG_SYS_LOAD_ADDR           CONFIG_LOADADDR
 
@@ -290,6 +291,7 @@
 
 /* Size of malloc() pool */
 #define CONFIG_SYS_MALLOC_LEN		((CONFIG_ENV_SIZE + (32 * 1024)) * 1024)
+#define CONFIG_SYS_BOOTM_LEN		SZ_64M
 
 #define CONFIG_SYS_SDRAM_BASE		0x80000000
 #define PHYS_SDRAM_1			0x80000000
