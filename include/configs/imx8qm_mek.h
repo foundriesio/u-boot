@@ -124,6 +124,7 @@
 	XEN_BOOT_ENV \
 	JAILHOUSE_ENV\
 	AHAB_ENV \
+	"scriptaddr=0x83100000\0" \
 	"script=boot.scr\0" \
 	"image=Image\0" \
 	SPLASH_IMAGE_ADDR \
