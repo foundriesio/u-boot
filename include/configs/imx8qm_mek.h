@@ -170,6 +170,7 @@
 	XEN_BOOT_ENV \
 	JAILHOUSE_ENV\
 	AHAB_ENV \
+	"scriptaddr=0x83100000\0" \
 	"script=boot.scr\0" \
 	"image=Image\0" \
 	SPLASH_IMAGE_ADDR \
@@ -256,6 +257,8 @@
 
 /* Link Definitions */
 #ifdef CONFIG_TARGET_IMX8QM_MEK_A72_ONLY
+	#undef CONFIG_SYS_LOAD_ADDR
+	#define CONFIG_SYS_LOAD_ADDR		0xC7000000
 	#define CONFIG_SYS_INIT_SP_ADDR		0xC0200000
 #else
 	#define CONFIG_SYS_INIT_SP_ADDR		0x80200000
