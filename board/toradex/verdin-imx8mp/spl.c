@@ -22,6 +22,8 @@
 #include <power/pmic.h>
 #include <spl.h>
 
+extern struct dram_timing_info dram_timing2;
+
 DECLARE_GLOBAL_DATA_PTR;
 
 int spl_board_boot_device(enum boot_device boot_dev_spl)
@@ -52,7 +54,14 @@ int spl_board_boot_device(enum boot_device boot_dev_spl)
 
 void spl_dram_init(void)
 {
-	ddr_init(&dram_timing);
+	/*
+	 * try configuring for quad die, dual rank aka 8 GB falling back to
+	 * dual die, single rank aka 1 GB (untested), 2 GB or 4 GB if it fails
+	 */
+	if (ddr_init(&dram_timing)) {
+		printf("Quad die, dual rank failed, attempting dual die, single rank configuration.\n");
+		ddr_init(&dram_timing2);
+	}
 }
 
 #define I2C_PAD_CTRL (PAD_CTL_DSE6 | PAD_CTL_HYS | PAD_CTL_PUE | PAD_CTL_PE)
