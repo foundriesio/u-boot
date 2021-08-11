@@ -97,7 +97,7 @@ static int fiovb_provisioned(void)
 #define SECURE_FUSE_BANK	(0)
 #define SECURE_FUSE_WORD	(6)
 #define SECURE_FUSE_VALUE	(0x00000002)
-#elif CONFIG_IMX8MM
+#elif CONFIG_IMX8M
 #define SRK_FUSE_LIST								\
 { 6, 0 }, { 6, 1 }, { 6, 2 }, { 6, 3 }, { 7, 0 }, { 7, 1 }, { 7, 2 }, { 7 , 3 },
 #define SECURE_FUSE_BANK	(1)
