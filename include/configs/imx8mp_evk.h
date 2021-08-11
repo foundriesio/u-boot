@@ -165,6 +165,7 @@
 			"fi; " \
 		"fi;\0"
 
+#ifndef CONFIG_BOOTCOMMAND
 #define CONFIG_BOOTCOMMAND \
 	   "mmc dev ${mmcdev}; if mmc rescan; then " \
 		   "if run loadbootscript; then " \
@@ -176,6 +177,7 @@
 			   "fi; " \
 		   "fi; " \
 	   "fi;"
+#endif
 #endif
 
 /* Link Definitions */
