@@ -8,6 +8,7 @@
 	aliases {
 		usbgadget0 = &usbg1;
 		usbgadget1 = &usbg2;
+		mmc2 = &usdhc3;
 	};
 
 	usbg1: usbg1 {
@@ -28,6 +29,7 @@
 		optee {
 			compatible = "linaro,optee-tz";
 			method = "smc";
+			rpmb-dev = <&usdhc3>;
 		};
 	};
 };
