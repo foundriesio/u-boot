@@ -1672,8 +1672,8 @@ static struct esdhc_soc_data usdhc_imx8qm_data = {
 		ESDHC_FLAG_HS400 | ESDHC_FLAG_HS400_ES,
 };
 
-#define ESDHC_FLAG_STATE_LOST_IN_LPMODE BIT(10)
 #define ESDHC_FLAG_PMQOS		BIT(13)
+#define ESDHC_FLAG_STATE_LOST_IN_LPMODE BIT(14)
 
 static struct esdhc_soc_data usdhc_imx7ulp_data = {
 	.flags = ESDHC_FLAG_USDHC | ESDHC_FLAG_STD_TUNING
