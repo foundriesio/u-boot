@@ -1666,21 +1666,15 @@ static struct esdhc_soc_data usdhc_imx7d_data = {
 			| ESDHC_FLAG_HS400,
 };
 
+static struct esdhc_soc_data usdhc_imx7ulp_data = {
+	.flags = ESDHC_FLAG_USDHC | ESDHC_FLAG_STD_TUNING
+			| ESDHC_FLAG_HAVE_CAP1 | ESDHC_FLAG_HS200,
+};
+
 static struct esdhc_soc_data usdhc_imx8qm_data = {
 	.flags = ESDHC_FLAG_USDHC | ESDHC_FLAG_STD_TUNING |
 		ESDHC_FLAG_HAVE_CAP1 | ESDHC_FLAG_HS200 |
 		ESDHC_FLAG_HS400 | ESDHC_FLAG_HS400_ES,
-};
-
-#define ESDHC_FLAG_STATE_LOST_IN_LPMODE BIT(10)
-#define ESDHC_FLAG_PMQOS		BIT(13)
-
-static struct esdhc_soc_data usdhc_imx7ulp_data = {
-	.flags = ESDHC_FLAG_USDHC | ESDHC_FLAG_STD_TUNING
-			| ESDHC_FLAG_HAVE_CAP1 | ESDHC_FLAG_HS200
-			| ESDHC_FLAG_HS400
-			| ESDHC_FLAG_STATE_LOST_IN_LPMODE
-			| ESDHC_FLAG_PMQOS,
 };
 
 static const struct udevice_id fsl_esdhc_ids[] = {
