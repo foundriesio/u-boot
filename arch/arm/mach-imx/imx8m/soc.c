@@ -1213,6 +1213,14 @@ static uint32_t gpc_pu_m_core_offset[11] = {
 	0xec0, 0xf00, 0xf40,
 };
 
+#ifdef CONFIG_IMX8MP
+#define PU_PGC_UP_TRG			0xD8
+#define PU_PGC_DN_TRG			0xE4
+#else
+#define PU_PGC_UP_TRG			0xF8
+#define PU_PGC_DN_TRG			0x104
+#endif
+
 #define PGC_PCR				0
 
 void imx_gpc_set_m_core_pgc(unsigned int offset, bool pdn)
@@ -1235,7 +1243,7 @@ void imx8m_usb_power_domain(uint32_t domain_id, bool on)
 
 	imx_gpc_set_m_core_pgc(gpc_pu_m_core_offset[domain_id], true);
 
-	reg = GPC_BASE_ADDR + (on ? 0xf8 : 0x104);
+	reg = GPC_BASE_ADDR + (on ? PU_PGC_UP_TRG : PU_PGC_DN_TRG);
 	val = 1 << (domain_id > 3 ? (domain_id + 3) : domain_id);
 	writel(val, reg);
 	while (readl(reg) & val)
