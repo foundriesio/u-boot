@@ -294,7 +294,7 @@ void s_init(void)
 }
 #endif
 
-#ifndef CONFIG_ULP_WATCHDOG
+#if !CONFIG_IS_ENABLED(ULP_WATCHDOG) || CONFIG_IS_ENABLED(SPL_BUILD)
 void reset_cpu(void)
 {
 	setbits_le32(SIM0_RBASE, SIM_SOPT1_A7_SW_RESET);

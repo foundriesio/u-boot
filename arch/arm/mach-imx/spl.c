@@ -37,6 +37,10 @@ __weak int spl_board_boot_device(enum boot_device boot_dev_spl)
 	case SD3_BOOT:
 	case MMC3_BOOT:
 		return BOOT_DEVICE_MMC1;
+#elif defined(CONFIG_MX7ULP)
+        case SD1_BOOT:
+        case MMC1_BOOT:
+                return BOOT_DEVICE_MMC1;
 #elif defined(CONFIG_IMX8)
 	case MMC1_BOOT:
 		return BOOT_DEVICE_MMC1;
@@ -158,7 +162,7 @@ u32 spl_boot_device(void)
 	return BOOT_DEVICE_NONE;
 }
 
-#elif defined(CONFIG_MX7) || defined(CONFIG_IMX8M) || defined(CONFIG_IMX8) || defined(CONFIG_IMX9)
+#elif defined(CONFIG_MX7) || defined(CONFIG_MX7ULP) || defined(CONFIG_IMX8M) || defined(CONFIG_IMX8) || defined(CONFIG_IMX9)
 /* Translate iMX7/i.MX8M boot device to the SPL boot device enumeration */
 u32 spl_boot_device(void)
 {
@@ -171,7 +175,9 @@ u32 spl_boot_device(void)
 	 */
 	if (((bmode >> 24) & 0x03) == 0x01) /* Serial Downloader */
 		return BOOT_DEVICE_BOARD;
+#endif
 
+#if defined(CONFIG_MX7) || defined(CONFIG_MX7ULP)
 	/*
 	 * The above method does not detect that the boot ROM used
 	 * serial downloader in case the boot ROM decided to use the
@@ -189,7 +195,7 @@ u32 spl_boot_device(void)
 
 	return spl_board_boot_device(boot_device_spl);
 }
-#endif /* CONFIG_MX7 || CONFIG_IMX8M || CONFIG_IMX8 */
+#endif /* CONFIG_MX7 || CONFIG_MX7ULP || CONFIG_IMX8M || CONFIG_IMX8 */
 
 #ifdef CONFIG_SPL_USB_GADGET
 int g_dnl_bind_fixup(struct usb_device_descriptor *dev, const char *name)
