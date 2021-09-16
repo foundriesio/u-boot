@@ -95,6 +95,10 @@ config FIT_RSASSA_PSS
 	  Enable this to support the pss padding algorithm as described
 	  in the rfc8017 (https://tools.ietf.org/html/rfc8017).
 
+config FIT_SIGNATURE_STRICT
+	bool "Requires a valid FIT configuration signature for every image"
+	select FIT_SIGNATURE
+
 config FIT_CIPHER
 	bool "Enable ciphering data in a FIT uImages"
 	depends on DM
