@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <fpga.h>
 #include <gzip.h>
+#include <hang.h>
 #include <image.h>
 #include <log.h>
 #include <memalign.h>
@@ -295,8 +296,14 @@ static int load_simple_fit(struct spl_load_info *info, ulong fit_offset,
 		printf("## Checking hash(es) for Image %s ... ",
 		       fit_get_name(fit, node, NULL));
 		if (!fit_image_verify_with_data(fit, node, gd_fdt_blob(), src,
-						length))
-			return -EPERM;
+						length)) {
+			if (CONFIG_IS_ENABLED(FIT_SIGNATURE_STRICT)) {
+				puts("Invalid FIT signature found in a required image.\n");
+				hang();
+			} else {
+				return -EPERM;
+			}
+		}
 		puts("OK\n");
 	}
 
@@ -726,8 +733,14 @@ int spl_load_simple_fit(struct spl_image_info *spl_image,
 	ctx.fit = spl_load_simple_fit_fix_load(ctx.fit);
 
 	ret = spl_simple_fit_parse(&ctx);
-	if (ret < 0)
-		return ret;
+	if (ret < 0) {
+		if (CONFIG_IS_ENABLED(FIT_SIGNATURE_STRICT)) {
+			puts("SPL_FIT_SIGNATURE_STRICT needs a valid config node in FIT\n");
+			hang();
+		} else {
+			return ret;
+		}
+	}
 
 	if (IS_ENABLED(CONFIG_SPL_FPGA))
 		spl_fit_load_fpga(&ctx, info, offset);
