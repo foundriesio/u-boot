@@ -31,6 +31,10 @@ __weak int spl_board_boot_device(enum boot_device boot_dev_spl)
 	case SD3_BOOT:
 	case MMC3_BOOT:
 		return BOOT_DEVICE_MMC1;
+#elif defined(CONFIG_MX7ULP)
+        case SD1_BOOT:
+        case MMC1_BOOT:
+                return BOOT_DEVICE_MMC1;
 #elif defined(CONFIG_IMX8)
 	case MMC1_BOOT:
 		return BOOT_DEVICE_MMC1;
