@@ -868,6 +868,7 @@ void set_dfu_alt_info(char *interface, char *devstr)
 				 "u-boot.itb fat %d 1",
 				 bootseq, multiboot, bootseq, bootseq);
 		break;
+#if defined(CONFIG_SPL_SPI_FLASH_SUPPORT)
 	case QSPI_MODE_24BIT:
 	case QSPI_MODE_32BIT:
 		snprintf(buf, DFU_ALT_BUF_LEN,
@@ -875,6 +876,7 @@ void set_dfu_alt_info(char *interface, char *devstr)
 			 "u-boot.itb raw 0x%x 0x500000",
 			 multiboot * SZ_32K, CONFIG_SYS_SPI_U_BOOT_OFFS);
 		break;
+#endif
 	default:
 		return;
 	}
