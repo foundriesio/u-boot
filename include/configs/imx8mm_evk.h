@@ -44,7 +44,7 @@
 #else
 #define CONFIG_POWER_BD71837
 #endif
-#undef CONFIG_DM_I2C
+#undef CONFIG_SPL_DM_I2C
 
 #define CONFIG_SPL_NAND_BASE
 #define CONFIG_SPL_NAND_IDENT
