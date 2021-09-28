@@ -70,8 +70,8 @@ config TARGET_IMX8MQ_EVK
 	bool "imx8mq_evk"
 	select IMX8MQ
 	select IMX8M_LPDDR4
-	select FSL_CAAM
-	select FSL_BLOB
+	imply FSL_CAAM
+	imply FSL_BLOB
 	select ARCH_MISC_INIT
 	select SPL_CRYPTO if SPL
 
@@ -116,8 +116,8 @@ config TARGET_IMX8MM_EVK
 	select IMX8MM
 	select SUPPORT_SPL
 	select IMX8M_LPDDR4
-	select FSL_CAAM
-	select FSL_BLOB
+	imply FSL_CAAM
+	imply FSL_BLOB
 	select ARCH_MISC_INIT
 	select SPL_CRYPTO if SPL
 
@@ -126,8 +126,8 @@ config TARGET_IMX8MM_DDR4_EVK
 	select IMX8MM
 	select SUPPORT_SPL
 	select IMX8M_DDR4
-	select FSL_CAAM
-	select FSL_BLOB
+	imply FSL_CAAM
+	imply FSL_BLOB
 	select ARCH_MISC_INIT
 	select SPL_CRYPTO if SPL
 
@@ -220,8 +220,8 @@ config TARGET_IMX8MN_EVK
 	select IMX8MN
 	select SUPPORT_SPL
 	select IMX8M_LPDDR4
-	select FSL_CAAM
-	select FSL_BLOB
+	imply FSL_CAAM
+	imply FSL_BLOB
 	select SPL_CRYPTO if SPL
 
 config TARGET_IMX8MN_DDR4_EVK
@@ -229,8 +229,8 @@ config TARGET_IMX8MN_DDR4_EVK
 	select IMX8MN
 	select SUPPORT_SPL
 	select IMX8M_DDR4
-	select FSL_CAAM
-	select FSL_BLOB
+	imply FSL_CAAM
+	imply FSL_BLOB
 	select SPL_CRYPTO if SPL
 
 config TARGET_IMX8MN_DDR3_EVK
@@ -238,8 +238,8 @@ config TARGET_IMX8MN_DDR3_EVK
 	select IMX8MN
 	select SUPPORT_SPL
 	select IMX8M_DDR3L
-	select FSL_CAAM
-	select FSL_BLOB
+	imply FSL_CAAM
+	imply FSL_BLOB
 	select SPL_CRYPTO if SPL
 
 config TARGET_IMX8MN_AB2
@@ -304,8 +304,8 @@ config TARGET_IMX8MP_EVK
 	select IMX8MP
 	select SUPPORT_SPL
 	select IMX8M_LPDDR4
-	select FSL_CAAM
-	select FSL_BLOB
+	imply FSL_CAAM
+	imply FSL_BLOB
 	select ARCH_MISC_INIT
 	select SPL_CRYPTO if SPL
 
@@ -323,8 +323,8 @@ config TARGET_IMX8MP_DDR4_EVK
 	select IMX8MP
 	select SUPPORT_SPL
 	select IMX8M_DDR4
-	select FSL_CAAM
-	select FSL_BLOB
+	imply FSL_CAAM
+	imply FSL_BLOB
 	select ARCH_MISC_INIT
 	select SPL_CRYPTO if SPL
 
