@@ -97,8 +97,8 @@ config TARGET_IMX8QM_MEK
 	bool "Support i.MX8QM MEK board"
 	select BOARD_LATE_INIT
 	select IMX8QM
-	select FSL_CAAM
-	select FSL_BLOB
+	imply FSL_CAAM
+	imply FSL_BLOB
 	select ARCH_MISC_INIT
 	select SPL_CRYPTO if SPL
 
@@ -128,8 +128,8 @@ config TARGET_IMX8QXP_MEK
 	bool "Support i.MX8QXP MEK board"
 	select BOARD_LATE_INIT
 	select IMX8QXP
-	select FSL_CAAM
-	select FSL_BLOB
+	imply FSL_CAAM
+	imply FSL_BLOB
 	select ARCH_MISC_INIT
 	select SPL_CRYPTO if SPL
 
@@ -162,8 +162,8 @@ config TARGET_IMX8DXL_PHANTOM_MEK
 	bool "Support i.MX8DXL PHANTOM MEK board"
 	select BOARD_LATE_INIT
 	select IMX8QXP
-	select FSL_CAAM
-	select FSL_BLOB
+	imply FSL_CAAM
+	imply FSL_BLOB
 	select ARCH_MISC_INIT
 	select SPL_CRYPTO if SPL
 
@@ -172,8 +172,8 @@ config TARGET_IMX8DX_MEK
 	select BOARD_LATE_INIT
 	select SUPPORT_SPL
 	select IMX8QXP
-	select FSL_CAAM
-	select FSL_BLOB
+	imply FSL_CAAM
+	imply FSL_BLOB
 	select ARCH_MISC_INIT
 	select SPL_CRYPTO if SPL
 
@@ -182,8 +182,8 @@ config TARGET_IMX8DXL_EVK
 	select BOARD_LATE_INIT
 	select IMX8DXL
 	select CRYPTO_SHA2_ARM64_CE
-	select FSL_CAAM
-	select FSL_BLOB
+	imply FSL_CAAM
+	imply FSL_BLOB
 	select ARCH_MISC_INIT
 	select SPL_CRYPTO if SPL
 
@@ -191,8 +191,8 @@ config TARGET_IMX8DXL_DDR3_EVK
 	bool "Support i.MX8DXL EVK board"
 	select BOARD_LATE_INIT
 	select IMX8DXL
-	select FSL_CAAM
-	select FSL_BLOB
+	imply FSL_CAAM
+	imply FSL_BLOB
 	select ARCH_MISC_INIT
 	select SPL_CRYPTO if SPL
 
