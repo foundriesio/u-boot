@@ -876,3 +876,31 @@ enum env_location env_get_location(enum env_operation op, int prio)
 		return ENVL_NOWHERE;
 	}
 }
+
+#if defined(CONFIG_SPL_FS_LOAD_PAYLOAD_NAME)
+int spl_mmc_get_uboot_payload_filename(char *filename, size_t len,
+				       const u32 boot_device)
+{
+	int ret;
+	u32 multiboot;
+
+	if (!filename)
+		return -1;
+
+	multiboot = multi_boot_get();
+
+	if (multiboot)
+		ret = snprintf(filename, len, "u-boot%04d.itb", multiboot);
+	else
+		ret = snprintf(filename, len, "u-boot.itb");
+
+	if (ret < 0) {
+		printf("Can't construct SPL payload filename");
+		return ret;
+	}
+
+	printf("SPL: Booting %s\n", filename);
+
+	return 0;
+}
+#endif
