@@ -139,7 +139,8 @@ struct apu_regs {
 #define ZYNQMP_SILICON_VER_SHIFT	0
 
 struct csu_regs {
-	u32 reserved0[4];
+	u32 status;
+	u32 reserved0[3];
 	u32 multi_boot;
 	u32 reserved1[11];
 	u32 idcode;
