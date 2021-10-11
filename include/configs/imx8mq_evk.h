@@ -44,7 +44,7 @@
 
 #undef CONFIG_DM_PMIC
 #undef CONFIG_DM_PMIC_PFUZE100
-#undef CONFIG_DM_I2C
+#undef CONFIG_SPL_DM_I2C
 
 #define CONFIG_SYS_I2C
 
