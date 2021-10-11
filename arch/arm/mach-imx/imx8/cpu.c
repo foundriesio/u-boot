@@ -421,6 +421,10 @@ void get_board_serial(struct tag_serialnr *serialnr)
 }
 #endif /*CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG*/
 
+#ifndef CONFIG_SYS_MMC_ENV_DEV
+#define CONFIG_SYS_MMC_ENV_DEV -1
+#endif
+
 __weak int board_mmc_get_env_dev(int devno)
 {
 	return devno;
