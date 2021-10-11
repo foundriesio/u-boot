@@ -10,6 +10,10 @@
 #include <asm/mach-imx/boot_mode.h>
 #include <env.h>
 
+#ifndef CONFIG_SYS_MMC_ENV_DEV
+#define CONFIG_SYS_MMC_ENV_DEV -1
+#endif
+
 __weak int board_mmc_get_env_dev(int devno)
 {
 	return devno;
