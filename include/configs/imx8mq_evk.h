@@ -105,6 +105,8 @@
 	"fdt_addr=0x43000000\0"			\
 	"fdt_high=0xffffffffffffffff\0"		\
 	"boot_fdt=try\0" \
+	"dfu_alt_info=mmc 0=imx-boot raw 0x42 0x2be mmcpart 1;" \
+		"u-boot-itb raw 0x1300 0xD00 mmcpart 1\0" \
 	"fdtfile=imx8mq-evk.dtb\0" \
 	"bootm_size=0x10000000\0" \
 	"mmcdev="__stringify(CONFIG_SYS_MMC_ENV_DEV)"\0" \
