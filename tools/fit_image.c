@@ -203,7 +203,7 @@ static void get_basename(char *str, int size, const char *fname)
 static void add_crc_node(void *fdt)
 {
 	fdt_begin_node(fdt, "hash-1");
-	fdt_property_string(fdt, FIT_ALGO_PROP, "crc32");
+	fdt_property_string(fdt, FIT_ALGO_PROP, "sha256");
 	fdt_end_node(fdt);
 }
 
