@@ -214,7 +214,7 @@ static void get_basename(char *str, int size, const char *fname)
 static void fit_add_hash_or_sign(struct image_tool_params *params, void *fdt,
 				 bool is_images_subnode)
 {
-	const char *hash_algo = "crc32";
+	const char *hash_algo = "sha256";
 	bool do_hash = false;
 	bool do_sign = false;
 
@@ -230,7 +230,7 @@ static void fit_add_hash_or_sign(struct image_tool_params *params, void *fdt,
 	case AF_SIGNED_CONF:
 		if (is_images_subnode) {
 			do_hash = true;
-			hash_algo = "sha1";
+			hash_algo = "sha256";
 		} else {
 			do_sign = true;
 		}
