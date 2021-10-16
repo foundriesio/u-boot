@@ -166,6 +166,7 @@ __weak void __noreturn jump_to_image_optee(struct spl_image_info *spl_image)
 {
 	spl_optee_entry(NULL, NULL, spl_image->fdt_addr,
 			(void *)spl_image->entry_point);
+	panic("spl_optee_entry() returns control back\n");
 }
 #endif
 
