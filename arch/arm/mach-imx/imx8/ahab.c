@@ -283,6 +283,23 @@ static int do_ahab_status(cmd_tbl_t *cmdtp, int flag, int argc,
 	return 0;
 }
 
+#define AHAB_LIFECYCLE_OEM_CLOSED 0x80
+int boot_mode_is_closed(void)
+{
+	int err;
+	u16 lc;
+	err = sc_seco_chip_info(-1, &lc, NULL, NULL, NULL);
+	if (err != SC_ERR_NONE) {
+		printf("Error getting board AHAB lifecycle\n");
+		return -EIO;
+	}
+
+	if (lc == AHAB_LIFECYCLE_OEM_CLOSED)
+		return 1;
+
+	return 0;
+}
+
 static int confirm_close(void)
 {
 	puts("Warning: Please ensure your sample is in NXP closed state, "

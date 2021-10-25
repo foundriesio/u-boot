@@ -30,13 +30,6 @@
 #define SND_IMG_NUM_TO_OFF(num) \
         ((1UL << ((0 == (num)) ? 2 : (2 == (num)) ? 0 : (num))) * SND_IMG_OFF_UNIT)
 
-
-#if defined(CONFIG_IMX8QM)
-#define FUSE_IMG_SET_OFF_WORD 464
-#elif defined(CONFIG_IMX8QXP) || defined (CONFIG_IMX8DXL)
-#define FUSE_IMG_SET_OFF_WORD 720
-#endif
-
 static int __get_container_size(ulong addr, u16 *header_length)
 {
 	struct container_hdr *phdr;
