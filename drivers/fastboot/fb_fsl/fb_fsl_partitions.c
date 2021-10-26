@@ -286,7 +286,18 @@ static int _fastboot_parts_load_from_ptable(void)
 	ptable[PTN_BOOTLOADER_SECONDARY_INDEX].start = CONFIG_SECONDARY_BOOT_SECTOR_OFFSET +
 		ptable[PTN_BOOTLOADER_INDEX].start;
 	ptable[PTN_BOOTLOADER_SECONDARY_INDEX].length = ptable[PTN_BOOTLOADER_INDEX].length;
-	ptable[PTN_BOOTLOADER_SECONDARY_INDEX].partition_id = boot_partition;
+	/*
+	 * From 5.8.2.2.1 High Level eMMC Boot Flow Note:
+	 * For the eMMC boot scenarios where the images are located in the boot partition
+	 * the boot image set selection is done based on BOOT_PARTITION_ENABLE eMMC ECSD register values,
+	 * which means that secondary boot image set should be flashed to boot1 partition to the
+	 * same offset the primary one
+	 */
+	if (is_imx8qm() || is_imx8qxp()) {
+		ptable[PTN_BOOTLOADER_SECONDARY_INDEX].partition_id = FASTBOOT_MMC_BOOT1_PARTITION_ID;
+	} else {
+		ptable[PTN_BOOTLOADER_SECONDARY_INDEX].partition_id = boot_partition;
+	}
 	ptable[PTN_BOOTLOADER_SECONDARY_INDEX].flags = FASTBOOT_PTENTRY_FLAGS_UNERASEABLE;
 	strcpy(ptable[PTN_BOOTLOADER_SECONDARY_INDEX].fstype, "raw");
 
@@ -306,7 +317,18 @@ static int _fastboot_parts_load_from_ptable(void)
 	strcpy(ptable[PTN_BOOTLOADER2_SECONDARY_INDEX].name, FASTBOOT_PARTITION_BOOTLOADER2_SECONDARY);
 	ptable[PTN_BOOTLOADER2_SECONDARY_INDEX].start = CONFIG_SECONDARY_BOOT_SECTOR_OFFSET + ptable[PTN_BOOTLOADER2_INDEX].start;
 	ptable[PTN_BOOTLOADER2_SECONDARY_INDEX].length = ptable[PTN_BOOTLOADER2_INDEX].length;
-	ptable[PTN_BOOTLOADER2_SECONDARY_INDEX].partition_id = boot_partition;
+	/*
+	 * From 5.8.2.2.1 High Level eMMC Boot Flow Note:
+	 * For the eMMC boot scenarios where the images are located in the boot partition
+	 * the boot image set selection is done based on BOOT_PARTITION_ENABLE eMMC ECSD register values,
+	 * which means that secondary boot image set should be flashed to boot1 partition to the
+	 * same offset the primary one
+	 */
+	if (is_imx8qm() || is_imx8qxp()) {
+		ptable[PTN_BOOTLOADER2_SECONDARY_INDEX].partition_id = FASTBOOT_MMC_BOOT1_PARTITION_ID;
+	} else {
+		ptable[PTN_BOOTLOADER2_SECONDARY_INDEX].partition_id = boot_partition;
+	}
 	ptable[PTN_BOOTLOADER2_SECONDARY_INDEX].flags = FASTBOOT_PTENTRY_FLAGS_UNERASEABLE;
 	strcpy(ptable[PTN_BOOTLOADER2_SECONDARY_INDEX].fstype, "raw");
 	last_bootloader_partition = PTN_BOOTLOADER2_SECONDARY_INDEX;
