@@ -419,7 +419,8 @@ int mmc_image_load_late(struct mmc *mmc)
 #endif
 
 #if defined(CONFIG_SECONDARY_BOOT_RUNTIME_DETECTION) && \
-    defined(CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_USE_SECTOR)
+    defined(CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_USE_SECTOR) && \
+    !defined(CONFIG_SPL_LOAD_IMX_CONTAINER)
 unsigned long spl_mmc_get_uboot_raw_sector(struct mmc *mmc,
 					   unsigned long raw_sect)
 {
@@ -437,4 +438,11 @@ unsigned long spl_mmc_get_uboot_raw_sector(struct mmc *mmc,
 
 	return offset;
 }
+
+#if defined(CONFIG_IMX8QM) || defined(CONFIG_IMX8QXP)
+int spl_mmc_emmc_boot_partition(struct mmc *mmc)
+{
+	return boot_mode_getprisec() ? 2 : 1;
+}
+#endif
 #endif
