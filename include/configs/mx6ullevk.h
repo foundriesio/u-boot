@@ -61,7 +61,6 @@
 	TEE_ENV \
 	"splashimage=0x8c000000\0" \
 	"fdt_addr=0x83000000\0" \
-	"fdt_high=0xffffffff\0"	  \
 	"tee_addr=0x84000000\0" \
 	"console=ttymxc0\0" \
 	"bootargs=console=ttymxc0,115200 ubi.mtd=nandrootfs "  \
@@ -85,7 +84,6 @@
 	"script=boot.scr\0" \
 	"image=zImage\0" \
 	"console=ttymxc0\0" \
-	"fdt_high=0xffffffff\0" \
 	"initrd_high=0xffffffff\0" \
 	"fdt_file=undefined\0" \
 	"fdt_addr=0x83000000\0" \
@@ -190,6 +188,7 @@
 #endif /* CONFIG_SPL_BUILD */
 
 /* Miscellaneous configurable options */
+#define CFG_SYS_BOOTMAPSZ	(256 << 20)
 
 /* Physical Memory Map */
 #define PHYS_SDRAM			MMDC0_ARB_BASE_ADDR
