@@ -9,6 +9,7 @@
 #include <common.h>
 #include <compiler.h>
 #include <cpu_func.h>
+#include <fpga.h>
 #include <log.h>
 #include <zynqmppl.h>
 #include <zynqmp_firmware.h>
@@ -210,6 +211,26 @@ static int zynqmp_load(xilinx_desc **desc_ptr, const void *buf, size_t bsize,
 	u32 ret_payload[PAYLOAD_ARG_CNT];
 	bool xilfpga_old = false;
 	xilinx_desc *desc = *desc_ptr;
+	fpga_desc *fdesc = container_of((void *)desc_ptr, fpga_desc, devdesc);
+
+	if (fdesc && fdesc->compatible &&
+	    !strcmp(fdesc->compatible, "u-boot,zynqmp-fpga-ddrauth")) {
+		if (CONFIG_IS_ENABLED(FPGA_LOAD_SECURE)) {
+			struct fpga_secure_info info = { 0 };
+
+			if (!desc->operations->loads) {
+				printf("%s: Missing load operation\n", __func__);
+				return FPGA_FAIL;
+			}
+			/* DDR authentication */
+			info.authflag = 1;
+			info.encflag = 2;
+			return desc->operations->loads(desc, buf, bsize, &info);
+		} else {
+			printf("No support for %s\n", fdesc->compatible);
+			return FPGA_FAIL;
+		}
+	}
 
 	if (zynqmp_firmware_version() <= PMUFW_V1_0) {
 		puts("WARN: PMUFW v1.0 or less is detected\n");
