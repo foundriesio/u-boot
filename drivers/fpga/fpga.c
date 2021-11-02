@@ -197,9 +197,9 @@ int fpga_fsload(int devnum, const void *buf, size_t size,
 		 fpga_fs_info *fpga_fsinfo)
 {
 	int ret_val = FPGA_FAIL;           /* assume failure */
-	const fpga_desc *desc = fpga_validate(devnum, buf, size,
-					      (char *)__func__);
+	const fpga_desc *desc;
 
+	desc = fpga_validate(devnum, buf, size, (char *)__func__);
 	if (desc) {
 		switch (desc->devtype) {
 		case fpga_xilinx:
@@ -225,10 +225,9 @@ int fpga_loads(int devnum, const void *buf, size_t size,
 	       struct fpga_secure_info *fpga_sec_info)
 {
 	int ret_val = FPGA_FAIL;
+	const fpga_desc *desc;
 
-	const fpga_desc *desc = fpga_validate(devnum, buf, size,
-					      (char *)__func__);
-
+	desc = fpga_validate(devnum, buf, size, (char *)__func__);
 	if (desc) {
 		switch (desc->devtype) {
 		case fpga_xilinx:
@@ -249,15 +248,31 @@ int fpga_loads(int devnum, const void *buf, size_t size,
 }
 #endif
 
+int fit_fpga_load(int devnum, const void *buf, size_t bsize,
+		  bitstream_type bstype, const char *compatible)
+{
+	fpga_desc *desc = (fpga_desc *)fpga_validate(devnum, buf, bsize,
+					      (char *)__func__);
+
+	if (!desc)
+		return FPGA_FAIL;
+	/*
+	 * Store the compatible string to proceed it in underlying
+	 * functions
+	 */
+	desc->compatible = (char *)compatible;
+
+	return fpga_load(devnum, buf, bsize, bstype);
+}
 /*
- * Generic multiplexing code
+ * Generic multiplexing code:
+ * Each architecture must handle the mandatory FPGA DT compatible property.
  */
 int fpga_load(int devnum, const void *buf, size_t bsize, bitstream_type bstype)
 {
 	int ret_val = FPGA_FAIL;           /* assume failure */
 	const fpga_desc *desc = fpga_validate(devnum, buf, bsize,
 					      (char *)__func__);
-
 	if (desc) {
 		switch (desc->devtype) {
 		case fpga_xilinx:
@@ -270,6 +285,9 @@ int fpga_load(int devnum, const void *buf, size_t bsize, bitstream_type bstype)
 			break;
 		case fpga_altera:
 #if defined(CONFIG_FPGA_ALTERA)
+			if (strncmp(desc->compatible, "u-boot,fpga-legacy", 18))
+				printf("Ignoring compatible = %s property\n",
+				       desc->compatible);
 			ret_val = altera_load(desc->devdesc, buf, bsize);
 #else
 			fpga_no_sup((char *)__func__, "Altera devices");
@@ -277,6 +295,9 @@ int fpga_load(int devnum, const void *buf, size_t bsize, bitstream_type bstype)
 			break;
 		case fpga_lattice:
 #if defined(CONFIG_FPGA_LATTICE)
+			if (strncmp(desc->compatible, "u-boot,fpga-legacy", 18))
+				printf("Ignoring compatible = %s property\n",
+				       desc->compatible);
 			ret_val = lattice_load(desc->devdesc, buf, bsize);
 #else
 			fpga_no_sup((char *)__func__, "Lattice devices");

@@ -35,6 +35,7 @@ typedef enum {			/* typedef fpga_type */
 typedef struct {		/* typedef fpga_desc */
 	fpga_type devtype;	/* switch value to select sub-functions */
 	void *devdesc;		/* real device descriptor */
+	char *compatible;	/* device compatible string */
 } fpga_desc;			/* end, typedef fpga_desc */
 
 typedef struct {                /* typedef fpga_desc */
@@ -63,6 +64,9 @@ int fpga_add(fpga_type devtype, void *desc);
 int fpga_count(void);
 const fpga_desc *const fpga_get_desc(int devnum);
 int fpga_is_partial_data(int devnum, size_t img_len);
+/* the DT compatible property must be handled by the different FPGA archs */
+int fit_fpga_load(int devnum, const void *buf, size_t bsize,
+		  bitstream_type bstype, const char *compatible);
 int fpga_load(int devnum, const void *buf, size_t bsize,
 	      bitstream_type bstype);
 int fpga_fsload(int devnum, const void *buf, size_t size,
