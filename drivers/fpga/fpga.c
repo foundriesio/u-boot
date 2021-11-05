@@ -277,8 +277,8 @@ int fpga_load(int devnum, const void *buf, size_t bsize, bitstream_type bstype)
 		switch (desc->devtype) {
 		case fpga_xilinx:
 #if defined(CONFIG_FPGA_XILINX)
-			ret_val = xilinx_load(desc->devdesc, buf, bsize,
-					      bstype);
+			ret_val = xilinx_load((xilinx_desc **)&desc->devdesc,
+					      buf, bsize, bstype);
 #else
 			fpga_no_sup((char *)__func__, "Xilinx devices");
 #endif

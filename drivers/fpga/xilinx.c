@@ -138,9 +138,11 @@ int fpga_loadbitstream(int devnum, char *fpgadata, size_t size,
 	return fpga_load(devnum, dataptr, swapsize, bstype);
 }
 
-int xilinx_load(xilinx_desc *desc, const void *buf, size_t bsize,
+int xilinx_load(xilinx_desc **desc_ptr, const void *buf, size_t bsize,
 		bitstream_type bstype)
 {
+	xilinx_desc *desc = *desc_ptr;
+
 	if (!xilinx_validate (desc, (char *)__FUNCTION__)) {
 		printf ("%s: Invalid device descriptor\n", __FUNCTION__);
 		return FPGA_FAIL;
