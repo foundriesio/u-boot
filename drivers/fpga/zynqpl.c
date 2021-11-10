@@ -370,11 +370,12 @@ static int zynq_validate_bitstream(xilinx_desc *desc, const void *buf,
 	return 0;
 }
 
-static int zynq_load(xilinx_desc *desc, const void *buf, size_t bsize,
+static int zynq_load(xilinx_desc **desc_ptr, const void *buf, size_t bsize,
 		     bitstream_type bstype)
 {
 	unsigned long ts; /* Timestamp */
 	u32 isr_status, swap;
+	xilinx_desc *desc = *desc_ptr;
 
 	/*
 	 * send bsize inplace of blocksize as it was not a bitstream

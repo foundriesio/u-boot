@@ -199,8 +199,8 @@ static int zynqmp_validate_bitstream(xilinx_desc *desc, const void *buf,
 	return 0;
 }
 
-static int zynqmp_load(xilinx_desc *desc, const void *buf, size_t bsize,
-		     bitstream_type bstype)
+static int zynqmp_load(xilinx_desc **desc_ptr, const void *buf, size_t bsize,
+		       bitstream_type bstype)
 {
 	ALLOC_CACHE_ALIGN_BUFFER(u32, bsizeptr, 1);
 	u32 swap = 0;
@@ -209,6 +209,7 @@ static int zynqmp_load(xilinx_desc *desc, const void *buf, size_t bsize,
 	u32 buf_lo, buf_hi;
 	u32 ret_payload[PAYLOAD_ARG_CNT];
 	bool xilfpga_old = false;
+	xilinx_desc *desc = *desc_ptr;
 
 	if (zynqmp_firmware_version() <= PMUFW_V1_0) {
 		puts("WARN: PMUFW v1.0 or less is detected\n");
