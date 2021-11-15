@@ -33,7 +33,9 @@
 		"rdinit=/linuxrc " \
 		"clk_ignore_unused "\
 		"\0" \
-	MFG_NAND_FIT_PARTITION \
+	"bootcmd_mfg=run mfgtool_args;" \
 	FASTBOOT_CMD \
+	"\0" \
+	MFG_NAND_FIT_PARTITION \
 
 #endif
