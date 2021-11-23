@@ -8,7 +8,7 @@
 #ifndef __IMX7ULP_SPL_CONFIG_H
 #define __IMX7ULP_SPL_CONFIG_H
 
-#if CONFIG_IS_ENABLED(SPL)
+#ifdef CONFIG_SPL
 /*
  * see figure 35-5 in i.MX 7ULP Reference manual:
  *  - IMX7ULP A7 OCRAM free area RAM is from 0x2F010000 to 0x2F03FF00.
@@ -28,12 +28,12 @@
 #define CONFIG_SPL_PAD_TO		0x2FC00
 
 /* MMC support */
-#if CONFIG_IS_ENABLED(SPL_MMC_SUPPORT)
+#if defined(CONFIG_SPL_MMC)
 #define CONFIG_SYS_MONITOR_LEN			409600	/* 400 KB */
 #endif
 
 /* Define the payload for FAT/EXT support */
-#if CONFIG_IS_ENABLED(SPL_FS_FAT) || CONFIG_IS_ENABLED(SPL_FS_EXT4)
+#if defined(CONFIG_SPL_FS_FAT) || defined(CONFIG_SPL_FS_EXT4)
 #define CONFIG_SPL_FS_LOAD_PAYLOAD_NAME	"u-boot-dtb.img"
 #endif
 
