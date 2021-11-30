@@ -17,7 +17,7 @@
 
 #ifdef CONFIG_TPM_AUTH_SESSIONS
 
-#ifndef CONFIG_SHA1
+#if !CONFIG_IS_ENABLED(SHA1)
 #error "TPM_AUTH_SESSIONS require SHA1 to be configured, too"
 #endif /* !CONFIG_SHA1 */
 

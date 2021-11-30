@@ -41,7 +41,9 @@ DECLARE_GLOBAL_DATA_PTR;
 
 static void reloc_update(void);
 
-#if defined(CONFIG_SHA1) && !defined(CONFIG_SHA_PROG_HW_ACCEL)
+#if ((defined(CONFIG_SHA1) && !defined(CONFIG_SPL_BUILD)) || \
+     (defined(CONFIG_SPL_SHA1) && defined(CONFIG_SPL_BUILD))) && \
+     !defined(CONFIG_SHA_PROG_HW_ACCEL)
 static int hash_init_sha1(struct hash_algo *algo, void **ctxp)
 {
 	sha1_context *ctx = malloc(sizeof(sha1_context));
@@ -217,7 +219,8 @@ static int hash_finish_crc32(struct hash_algo *algo, void *ctx, void *dest_buf,
  * Note that algorithm names must be in lower case.
  */
 static struct hash_algo hash_algo[] = {
-#ifdef CONFIG_SHA1
+#if (defined(CONFIG_SHA1) && !defined(CONFIG_SPL_BUILD)) || \
+    (defined(CONFIG_SPL_SHA1) && defined(CONFIG_SPL_BUILD))
 	{
 		.name 		= "sha1",
 		.digest_size	= SHA1_SUM_LEN,

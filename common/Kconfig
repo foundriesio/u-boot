@@ -738,7 +738,7 @@ source "common/spl/Kconfig"
 
 config IMAGE_SIGN_INFO
 	bool
-	select SHA1
+	select SHA1 if !FIT_SIGNATURE_STRICT
 	select SHA256
 	help
 	  Enable image_sign_info helper functions.
@@ -747,7 +747,7 @@ if IMAGE_SIGN_INFO
 
 config SPL_IMAGE_SIGN_INFO
 	bool
-	select SHA1
+	select SPL_SHA1 if !SPL_FIT_SIGNATURE_STRICT
 	select SHA256
 	help
 	  Enable image_sign_info helper functions in SPL.

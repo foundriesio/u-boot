@@ -389,6 +389,14 @@ config SHA1
 	  The SHA1 algorithm produces a 160-bit (20-byte) hash value
 	  (digest).
 
+config SPL_SHA1
+	bool "Enable SHA1 support in SPL"
+	help
+	  This option enables support of hashing using SHA1 algorithm
+	  in SPL. The hash is calculated in software.
+	  The SHA1 algorithm produces a 160-bit (20-byte) hash value
+	  (digest).
+
 config SHA256
 	bool "Enable SHA256 support"
 	help

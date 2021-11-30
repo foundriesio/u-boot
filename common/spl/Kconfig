@@ -418,7 +418,7 @@ config SPL_MD5_SUPPORT
 config SPL_SHA1_SUPPORT
 	bool "Support SHA1"
 	depends on SPL_FIT && !SPL_FIT_SIGNATURE_STRICT
-	select SHA1
+	select SPL_SHA1
 	help
 	  Enable this to support SHA1 in FIT images within SPL. A SHA1
 	  checksum is a 160-bit (20-byte) hash value used to check that the
@@ -497,7 +497,7 @@ config SPL_CRYPTO_SUPPORT
 
 config SPL_HASH_SUPPORT
 	bool "Support hashing drivers"
-	select SHA1 if !SPL_FIT_SIGNATURE_STRICT
+	select SPL_SHA1 if !SPL_FIT_SIGNATURE_STRICT
 	select SHA256
 	help
 	  Enable hashing drivers in SPL. These drivers can be used to
@@ -508,13 +508,13 @@ config SPL_HASH_SUPPORT
 config TPL_HASH_SUPPORT
 	bool "Support hashing drivers in TPL"
 	depends on TPL
-	select SHA1 if !SPL_FIT_SIGNATURE_STRICT
+	select SPL_SHA1 if !SPL_FIT_SIGNATURE_STRICT
 	select SHA256
 	help
-	  Enable hashing drivers in SPL. These drivers can be used to
+	  Enable hashing drivers in TPL. These drivers can be used to
 	  accelerate secure boot processing in secure applications. Enable
 	  this option to build system-specific drivers for hash acceleration
-	  as part of an SPL build.
+	  as part of a TPL build.
 
 config SPL_DMA
 	bool "Support DMA drivers"
