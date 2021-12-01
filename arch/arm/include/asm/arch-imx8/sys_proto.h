@@ -32,6 +32,7 @@ void build_info(void);
 enum boot_device get_boot_device(void);
 int boot_mode_getprisec(void);
 int boot_mode_is_closed(void);
+int ahab_close(void);
 void boot_mode_enable_secondary(bool enable);
 int print_bootinfo(void);
 int sc_pm_setup_uart(sc_rsrc_t uart_rsrc, sc_pm_clock_rate_t clk_rate);
