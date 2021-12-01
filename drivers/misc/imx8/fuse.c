@@ -53,6 +53,7 @@ int fuse_sense(u32 bank, u32 word, u32 *val)
 	return res.a0;
 }
 
+#if defined(CONFIG_CMD_FUSE)
 int fuse_prog(u32 bank, u32 word, u32 val)
 {
 	struct arm_smccc_res res;
@@ -98,3 +99,4 @@ int fuse_override(u32 bank, u32 word, u32 val)
 	printf("Override fuse to i.MX8 in u-boot is forbidden\n");
 	return -EPERM;
 }
+#endif /* defined(CONFIG_CMD_FUSE) */
