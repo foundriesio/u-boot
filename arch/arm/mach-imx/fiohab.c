@@ -17,6 +17,11 @@
 #include <asm/arch/clock.h>
 #include <asm/arch/sys_proto.h>
 #include <asm/mach-imx/hab.h>
+#include <asm/mach-imx/sys_proto.h>
+
+#if defined(CONFIG_AHAB_BOOT)
+#include <asm/arch/sci/sci.h>
+#endif
 
 #if defined(CONFIG_FIOVB) && !defined(CONFIG_SPL_BUILD)
 #include <fiovb.h>
@@ -103,10 +108,42 @@ static int fiovb_provisioned(void)
 #define SECURE_FUSE_BANK	(1)
 #define SECURE_FUSE_WORD	(3)
 #define SECURE_FUSE_VALUE	(0x2000000)
+#elif CONFIG_IMX8QM
+#define SRK_FUSE_LIST								\
+{ 0, 722 }, { 0, 723 }, { 0, 724 }, { 0, 725 }, { 0, 726 }, { 0, 727 }, \
+{ 0, 728 }, { 0, 729 }, { 0, 730 }, { 0, 731 }, { 0, 732 }, { 0, 733 }, \
+{ 0, 734 }, { 0, 735 }, { 0, 736 }, { 0, 737 },
 #else
 #error "SoC not supported"
 #endif
 
+#if defined(CONFIG_AHAB_BOOT)
+static int hab_status(void)
+{
+	int err;
+	u8 idx = 0U;
+	u32 event;
+	u16 lc;
+
+	err = sc_seco_chip_info(-1, &lc, NULL, NULL, NULL);
+	if (err != SC_ERR_NONE) {
+		printf("Error in get lifecycle\n");
+		return -EIO;
+	}
+
+	err = sc_seco_get_event(-1, idx, &event);
+	while (err == SC_ERR_NONE) {
+		idx++;
+		err = sc_seco_get_event(-1, idx, &event);
+	}
+	/* No events */
+	if (idx == 0)
+		return 0;
+
+	return 1;
+}
+
+#else /* defined(CONFIG_AHAB_BOOT) */
 #ifdef CONFIG_CAAM_IGNORE_KNOWN_HAB_EVENTS
 #define RNG_FAIL_EVENT_SIZE 36
 /* Known HAB event from imx6d where RNG selftest failed due to ROM issue */
@@ -169,6 +206,7 @@ static int hab_status(void)
 
 	return 0;
 }
+#endif /* if defined(CONFIG_IMX8QM) */
 
 /* The fuses must have been programmed and their values set in the environment.
  * The fuse read operation returns a shadow value so a board reset is required
@@ -195,7 +233,7 @@ static int do_fiohab_close(struct cmd_tbl *cmdtp, int flag, int argc,
 	}
 
 	/* if secure boot is already enabled, there is nothing to do */
-	if (imx_hab_is_enabled()) {
+	if (boot_mode_is_closed()) {
 		printf("secure boot already enabled\n");
 		return 0;
 	}
@@ -233,10 +271,13 @@ static int do_fiohab_close(struct cmd_tbl *cmdtp, int flag, int argc,
 			return 1;
 		}
 	}
-
-	ret = fuse_prog(SECURE_FUSE_BANK, SECURE_FUSE_WORD, SECURE_FUSE_VALUE);
+#if defined(CONFIG_IMX8QM)
+		ret = ahab_close();
+#else
+		ret = fuse_prog(SECURE_FUSE_BANK, SECURE_FUSE_WORD, SECURE_FUSE_VALUE);
+#endif
 	if (ret) {
-		printf("Error writing the Secure Fuse\n");
+		printf("Error closing device");
 		return 1;
 	}
 
@@ -244,5 +285,5 @@ static int do_fiohab_close(struct cmd_tbl *cmdtp, int flag, int argc,
 }
 
 U_BOOT_CMD(fiohab_close, CONFIG_SYS_MAXARGS, 1, do_fiohab_close,
-	   "Close the board for HAB","");
+	   "Close the board for HABv4/AHAB","");
 
