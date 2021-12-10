@@ -761,19 +761,6 @@ int board_late_init(void)
 #if defined(CONFIG_USB_ETHER) && !defined(CONFIG_USB_GADGET_DOWNLOAD)
 	usb_ether_init();
 #endif
-
-	if (!(gd->flags & GD_FLG_ENV_DEFAULT)) {
-		debug("Saved variables - Skipping\n");
-		return 0;
-	}
-
-	if (!CONFIG_IS_ENABLED(ENV_VARS_UBOOT_RUNTIME_CONFIG))
-		return 0;
-
-	ret = set_fdtfile();
-	if (ret)
-		return ret;
-
 	bootmode = zynqmp_get_bootmode();
 
 	puts("Bootmode: ");
@@ -858,6 +845,18 @@ int board_late_init(void)
 		debug("Bootseq len: %x\n", bootseq_len);
 		env_set_hex("bootseq", bootseq);
 	}
+
+	if (!(gd->flags & GD_FLG_ENV_DEFAULT)) {
+		debug("Saved variables - Skipping\n");
+		return 0;
+	}
+
+	if (!CONFIG_IS_ENABLED(ENV_VARS_UBOOT_RUNTIME_CONFIG))
+		return 0;
+
+	ret = set_fdtfile();
+	if (ret)
+		return ret;
 
 	/*
 	 * One terminating char + one byte for space between mode
