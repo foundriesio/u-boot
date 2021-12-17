@@ -56,7 +56,7 @@ config MX6SLL
 
 config MX6UL
 	bool
-	select HAS_CAAM
+	select HAS_CAAM if !OPTEE
 	select ROM_UNIFIED_SECTIONS
 	select SYSCOUNTER_TIMER
 	select SYS_L2CACHE_OFF
