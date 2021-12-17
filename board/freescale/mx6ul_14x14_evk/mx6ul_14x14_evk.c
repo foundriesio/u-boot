@@ -65,6 +65,16 @@ DECLARE_GLOBAL_DATA_PTR;
 	PAD_CTL_PUS_47K_UP  | PAD_CTL_SPEED_LOW |		\
 	PAD_CTL_DSE_80ohm   | PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
 
+#ifdef CONFIG_SPL_LOAD_FIT
+int board_fit_config_name_match(const char *name)
+{
+	if (!strcmp(name, "imx6ul-14x14-evk"))
+		return 0;
+
+	return -1;
+}
+#endif
+
 #ifdef CONFIG_DM_PMIC
 int power_init_board(void)
 {
