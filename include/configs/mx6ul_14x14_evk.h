@@ -54,6 +54,7 @@
 	"mtdparts=" MFG_NAND_PARTITION \
 	"\0"\
 
+#ifndef CONFIG_SPL_BUILD
 #if defined(CONFIG_NAND_BOOT)
 #define CFG_EXTRA_ENV_SETTINGS \
 	CFG_MFG_ENV_SETTINGS \
@@ -178,6 +179,9 @@
 			"fi;\0" \
 
 #endif
+#else
+#define CONFIG_EXTRA_ENV_SETTINGS
+#endif /* CONFIG_SPL_BUILD */
 
 /* Miscellaneous configurable options */
 
