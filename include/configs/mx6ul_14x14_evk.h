@@ -15,6 +15,10 @@
 #include <asm/mach-imx/gpio.h>
 #include "imx_env.h"
 
+#ifdef CONFIG_SPL
+#include "imx6_spl.h"
+#endif
+
 /* uncomment for BEE support, needs to enable CONFIG_CMD_FUSE */
 /* #define CONFIG_CMD_BEE */
 
@@ -81,6 +85,7 @@
 	"mtdparts=" MFG_NAND_PARTITION \
 	"\0"\
 
+#ifndef CONFIG_SPL_BUILD
 #if defined(CONFIG_NAND_BOOT)
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	CONFIG_MFG_ENV_SETTINGS \
@@ -219,6 +224,9 @@
 		   "fi; " \
 	   "else run netboot; fi"
 #endif
+#else
+#define CONFIG_EXTRA_ENV_SETTINGS
+#endif /* CONFIG_SPL_BUILD */
 
 /* Miscellaneous configurable options */
 
