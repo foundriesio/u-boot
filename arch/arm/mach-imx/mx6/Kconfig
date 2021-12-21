@@ -533,8 +533,8 @@ config TARGET_MX6UL_9X9_EVK
 	select DM
 	select DM_THERMAL
 	select SUPPORT_SPL
-	select IMX_MODULE_FUSE
-	select OF_SYSTEM_SETUP
+	select IMX_MODULE_FUSE if !SPL_BUILD
+	select OF_SYSTEM_SETUP if !SPL_BUILD
 	imply CMD_DM
 	imply FSL_CAAM
 	imply FSL_BLOB
@@ -547,8 +547,8 @@ config TARGET_MX6UL_14X14_EVK
 	select DM
 	select DM_THERMAL
 	select SUPPORT_SPL
-	select IMX_MODULE_FUSE
-	select OF_SYSTEM_SETUP
+	select IMX_MODULE_FUSE if !SPL_BUILD
+	select OF_SYSTEM_SETUP if !SPL_BUILD
 	imply CMD_DM
 	imply FSL_CAAM
 	imply FSL_BLOB
@@ -560,8 +560,8 @@ config TARGET_MX6UL_14X14_DDR3_VAL
 	select BOARD_LATE_INIT
 	select DM
 	select DM_THERMAL
-	select IMX_MODULE_FUSE
-	select OF_SYSTEM_SETUP
+	select IMX_MODULE_FUSE if !SPL_BUILD
+	select OF_SYSTEM_SETUP if !SPL_BUILD
 	imply CMD_DM
 
 config TARGET_MX6UL_14X14_LPDDR2_VAL
@@ -570,8 +570,8 @@ config TARGET_MX6UL_14X14_LPDDR2_VAL
 	select BOARD_LATE_INIT
 	select DM
 	select DM_THERMAL
-	select IMX_MODULE_FUSE
-	select OF_SYSTEM_SETUP
+	select IMX_MODULE_FUSE if !SPL_BUILD
+	select OF_SYSTEM_SETUP if !SPL_BUILD
 	imply CMD_DM
 
 config TARGET_MX6UL_ENGICAM
@@ -598,8 +598,8 @@ config TARGET_MX6ULL_DDR3_VAL
 	select BOARD_LATE_INIT
 	select DM
 	select DM_THERMAL
-	select IMX_MODULE_FUSE
-	select OF_SYSTEM_SETUP
+	select IMX_MODULE_FUSE if !SPL_BUILD
+	select OF_SYSTEM_SETUP if !SPL_BUILD
 	imply CMD_DM
 
 config TARGET_MX6ULL_9X9_EVK
@@ -608,8 +608,8 @@ config TARGET_MX6ULL_9X9_EVK
 	select BOARD_LATE_INIT
 	select DM
 	select DM_THERMAL
-	select IMX_MODULE_FUSE
-	select OF_SYSTEM_SETUP
+	select IMX_MODULE_FUSE if !SPL_BUILD
+	select OF_SYSTEM_SETUP if !SPL_BUILD
 	imply CMD_DM
 
 config TARGET_MX6ULL_14X14_EVK
@@ -618,8 +618,8 @@ config TARGET_MX6ULL_14X14_EVK
 	select BOARD_LATE_INIT
 	select DM
 	select DM_THERMAL
-	select IMX_MODULE_FUSE
-	select OF_SYSTEM_SETUP
+	select IMX_MODULE_FUSE if !SPL_BUILD
+	select OF_SYSTEM_SETUP if !SPL_BUILD
 	select SUPPORT_SPL
 	imply CMD_DM
 
