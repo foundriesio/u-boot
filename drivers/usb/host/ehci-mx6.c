@@ -160,7 +160,7 @@ int ehci_hcd_init(int index, enum usb_init_type init,
 		(controller_spacing * index));
 	int ret;
 
-	if (IS_ENABLED(CONFIG_IMX_MODULE_FUSE)) {
+	if (CONFIG_IS_ENABLED(IMX_MODULE_FUSE)) {
 		if (usb_fused((ulong)ehci)) {
 			printf("SoC fuse indicates USB@0x%lx is unavailable.\n",
 			       (ulong)ehci);
