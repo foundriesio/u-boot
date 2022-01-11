@@ -12,6 +12,8 @@
 #include <mmc.h>
 #include <fiovb.h>
 
+#define FIOVB_NAME_LEN	40
+
 static struct fiovb_ops *fiovb_ops;
 
 int do_fiovb_init(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
@@ -46,7 +48,7 @@ int do_fiovb_read_pvalue(cmd_tbl_t *cmdtp, int flag, int argc,
 	size_t bytes_read;
 	void *buffer;
 	char *endp;
-	char fiovb_name[30] = { 0 }; /* fiovb.name */
+	char fiovb_name[FIOVB_NAME_LEN] = { 0 }; /* fiovb.name */
 	char fiovb_val[32] = { 0 };
 
 	if (!fiovb_ops) {
@@ -90,7 +92,7 @@ int do_fiovb_write_pvalue(cmd_tbl_t *cmdtp, int flag, int argc,
 {
 	const char *name;
 	const char *value;
-	char fiovb_name[30] = { 0 }; /* fiovb.name */
+	char fiovb_name[FIOVB_NAME_LEN] = { 0 }; /* fiovb.name */
 
 	if (!fiovb_ops) {
 		printf("Foundries.IO Verified Boot is not initialized, run 'fiovb init' first\n");
@@ -121,7 +123,7 @@ int do_fiovb_delete_pvalue(cmd_tbl_t *cmdtp, int flag, int argc,
 			   char * const argv[])
 {
 	const char *name;
-	char fiovb_name[30] = { 0 }; /* fiovb.name */
+	char fiovb_name[FIOVB_NAME_LEN] = { 0 }; /* fiovb.name */
 
 	if (!fiovb_ops) {
 		printf("Foundries.IO Verified Boot is not initialized, run 'fiovb init' first\n");
