@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright 2020 Compass Electronics Group, LLC
+ * Copyright 2021 NXP
  */
 
 / {
@@ -8,132 +8,10 @@
 		multiple-images;
 	};
 
-	wdt-reboot {
-		compatible = "wdt-reboot";
-		wdt = <&wdog1>;
-		u-boot,dm-spl;
-	};
-};
-
-&{/soc@0} {
-	u-boot,dm-pre-reloc;
-	u-boot,dm-spl;
-};
-
-&{/soc@0/bus@30800000/i2c@30a20000/pmic@4b} {
-	u-boot,dm-spl;
-};
-
-&{/soc@0/bus@30800000/i2c@30a20000/pmic@4b/regulators} {
-	u-boot,dm-spl;
-};
-
-&aips1 {
-	u-boot,dm-spl;
-	u-boot,dm-pre-reloc;
-};
-
-&aips2 {
-	u-boot,dm-spl;
-};
-
-&aips3 {
-	u-boot,dm-spl;
-};
-
-&clk {
-	u-boot,dm-spl;
-	u-boot,dm-pre-reloc;
-	/delete-property/ assigned-clocks;
-	/delete-property/ assigned-clock-parents;
-	/delete-property/ assigned-clock-rates;
-};
-
-&gpio1 {
-	u-boot,dm-spl;
-};
-
-&gpio2 {
-	u-boot,dm-spl;
-};
-
-&i2c1 {
-	u-boot,dm-spl;
-};
-
-&iomuxc {
-	u-boot,dm-spl;
-};
-
-&osc_24m {
-	u-boot,dm-spl;
-	u-boot,dm-pre-reloc;
-};
-
-&pca6416_0 {
-	compatible = "ti,tca6416";
-};
-
-&pca6416_1 {
-	compatible = "ti,tca6416";
-};
-
-&pinctrl_i2c1 {
-	u-boot,dm-spl;
-};
-
-&pinctrl_pmic {
-	u-boot,dm-spl;
-};
-
-&pinctrl_uart2 {
-	u-boot,dm-spl;
-};
-
-&pinctrl_usdhc2_gpio {
-	u-boot,dm-spl;
-};
-
-&pinctrl_usdhc2 {
-	u-boot,dm-spl;
-};
-
-&pinctrl_usdhc3 {
-	u-boot,dm-spl;
-};
-
-&reg_usdhc2_vmmc {
-	u-boot,off-on-delay-us = <20000>;
-};
-
-&uart2 {
-	u-boot,dm-spl;
-};
-
-&usdhc1 {
-	u-boot,dm-spl;
-	sd-uhs-sdr104;
-	sd-uhs-ddr50;
-};
-
-&usdhc2 {
-	u-boot,dm-spl;
-	sd-uhs-sdr104;
-	sd-uhs-ddr50;
-};
-
-&usdhc3 {
-	u-boot,dm-spl;
-	mmc-hs400-1_8v;
-	mmc-hs400-enhanced-strobe;
-};
-
-&wdog1 {
-	u-boot,dm-spl;
 };
 
 &binman {
-	 u-boot-spl-ddr {
+	u-boot-spl-ddr {
 		filename = "u-boot-spl-ddr.bin";
 		pad-byte = <0xff>;
 		align-size = <4>;
@@ -164,17 +42,26 @@
 		};
 	};
 
+	signed_hdmi {
+		filename = "signed_hdmi.bin";
+
+		blob_5: blob-ext@5 {
+			filename = "signed_hdmi_imx8m.bin";
+		};
+	};
 
 	spl {
 		filename = "spl.bin";
 
 		mkimage {
-			args = "-n spl/u-boot-spl.cfgout -T imx8mimage -e 0x912000";
+			args = "-n spl/u-boot-spl.cfgout -T imx8mimage -e 0x7e1000";
 
 			blob {
 				filename = "u-boot-spl-ddr.bin";
 			};
+
 		};
+
 	};
 
 	itb {
@@ -203,8 +90,8 @@
 					type = "firmware";
 					arch = "arm64";
 					compression = "none";
-					load = <0x960000>;
-					entry = <0x960000>;
+					load = <0x910000>;
+					entry = <0x910000>;
 
 					atf_blob: blob-ext {
 						filename = "bl31.bin";
@@ -245,7 +132,7 @@
 		};
 
 		uboot: blob-ext@2 {
-			offset = <0x58000>;
+			offset = <0x57c00>;
 			filename = "u-boot.itb";
 		};
 	};
