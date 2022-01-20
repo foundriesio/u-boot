@@ -435,7 +435,7 @@ static int do_multi_boot(struct cmd_tbl *cmdtp, int flag,
 		printf("Incorrect value of multiboot offset\n");
 		return CMD_RET_USAGE;
 	}
-#if defined(CONFIG_SPL_SPI_SUPPORT)
+#if defined(CONFIG_SPL_SPI)
 	if (!strcmp(env_get("modeboot"), "qspiboot")) {
 		u32 boot_image_offset = golden_image_boundary * multiboot;
 
@@ -1034,7 +1034,7 @@ void set_dfu_alt_info(char *interface, char *devstr)
 }
 #endif
 
-#if defined(CONFIG_SPL_SPI_SUPPORT)
+#if defined(CONFIG_SPL_SPI)
 unsigned int spl_spi_get_uboot_offs(struct spi_flash *flash)
 {
 	int ret;
