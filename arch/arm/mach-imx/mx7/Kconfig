@@ -12,7 +12,7 @@ config MX7
 
 config MX7D
 	bool
-	select HAS_CAAM
+	imply HAS_CAAM
 	select ROM_UNIFIED_SECTIONS
 	imply CMD_FUSE
 

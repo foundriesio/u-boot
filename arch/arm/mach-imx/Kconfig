@@ -1,5 +1,6 @@
 config HAS_CAAM
 	bool
+	depends on !OPTEE
 
 config IMX_CONFIG
 	string
