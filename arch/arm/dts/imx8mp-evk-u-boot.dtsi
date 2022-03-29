@@ -144,11 +144,31 @@
 	u-boot,dm-spl;
 };
 
+&i2c5 {
+	u-boot,dm-spl;
+};
+
 &pinctrl_i2c1 {
 	u-boot,dm-spl;
 };
 
 &pinctrl_i2c1_gpio {
+	u-boot,dm-spl;
+};
+
+&pinctrl_i2c3 {
+	u-boot,dm-spl;
+};
+
+&pinctrl_i2c3_gpio {
+	u-boot,dm-spl;
+};
+
+&pinctrl_i2c5 {
+	u-boot,dm-spl;
+};
+
+&pinctrl_i2c5_gpio {
 	u-boot,dm-spl;
 };
 
@@ -186,6 +206,10 @@
 };
 
 &{/soc@0/bus@30800000/i2c@30a20000/pca9450@25/regulators} {
+	u-boot,dm-spl;
+};
+
+&{/soc@0/bus@30800000/i2c@30a40000/gpio@20} {
 	u-boot,dm-spl;
 };
 
