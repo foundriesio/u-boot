@@ -28,6 +28,8 @@
 #include <mmc.h>
 #include <asm/arch/ddr.h>
 
+#include <pca953x.h>
+
 DECLARE_GLOBAL_DATA_PTR;
 
 int spl_board_boot_device(enum boot_device boot_dev_spl)
@@ -137,6 +139,41 @@ int power_init_board(void)
 }
 #endif
 
+static int setup_i2c5_bus(void)
+{
+	struct udevice *bus;
+	struct udevice *dev;
+	int ret;
+
+	/* set I2C3 bus to control the PCA6416 IO expander */
+	ret = uclass_get_device_by_name(UCLASS_I2C, "i2c@30a40000", &bus);
+	if (ret) {
+		printf("I2C3: failed to probe: %d\n", ret);
+		return ret;
+	}
+	ret = dm_i2c_probe(bus, 0x20, 0, &dev);
+	if (ret) {
+		printf("PCA6416: failed probe: %d\n", ret);
+		return ret;
+	}
+	puts("PCA6416: probe\n");
+
+	/* set P0_2 to enable I2C5 */
+	// set dir = output
+	dm_i2c_reg_write(dev, 0x6, 0x80);
+	// set val = high
+	dm_i2c_reg_write(dev, 0x2, 0x4);
+
+	/* set I2C5 bus */
+	ret = uclass_get_device_by_name(UCLASS_I2C, "i2c@30ad0000", &bus);
+	if (ret) {
+		printf("I2C5: failed to probe: %d\n", ret);
+		return ret;
+	}
+
+	return 0;
+}
+
 #ifdef CONFIG_SPL_LOAD_FIT
 int board_fit_config_name_match(const char *name)
 {
@@ -183,6 +220,8 @@ void board_init_f(ulong dummy)
 
 	/* DDR initialization */
 	spl_dram_init();
+
+	setup_i2c5_bus();
 
 	board_init_r(NULL, 0);
 }
