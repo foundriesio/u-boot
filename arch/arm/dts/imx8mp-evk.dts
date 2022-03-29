@@ -280,7 +280,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan1>;
 	xceiver-supply = <&reg_can1_stby>;
-	status = "okay";
+	status = "disabled";
 };
 
 &flexcan2 {
@@ -502,16 +502,18 @@
 /* I2C on expansion connector J22. */
 &i2c5 {
 	clock-frequency = <100000>; /* Lower clock speed for external bus. */
-	pinctrl-names = "default";
+	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_i2c5>;
-	status = "disabled"; /* can1 pins conflict with i2c5 */
-
+	pinctrl-1 = <&pinctrl_i2c5_gpio>;
+	scl-gpios = <&gpio5 3 GPIO_ACTIVE_HIGH>;
+	sda-gpios = <&gpio5 4 GPIO_ACTIVE_HIGH>;
 	/* GPIO 2 of PCA6416 is used to switch between CAN1 and I2C5 functions:
 	 *     LOW:  CAN1 (default, pull-down)
 	 *     HIGH: I2C5
-	 * You need to set it to high to enable I2C5 (for example, add gpio-hog
-	 * in pca6416 node).
+	 * Set it to high to enable I2C5 to allow supporting SE050.
 	 */
+	gpio = <&pca6416 2 GPIO_ACTIVE_HIGH>;
+	status = "okay";
 };
 
 &lcdif1 {
@@ -816,6 +818,13 @@
 		fsl,pins = <
 			MX8MP_IOMUXC_I2C3_SCL__GPIO5_IO18        	0x1c3
 			MX8MP_IOMUXC_I2C3_SDA__GPIO5_IO19        	0x1c3
+		>;
+	};
+
+	pinctrl_i2c5_gpio: i2c5gpiogrp {
+		fsl,pins = <
+			MX8MP_IOMUXC_SPDIF_TX__GPIO5_IO03        	0x1c3
+			MX8MP_IOMUXC_SPDIF_RX__GPIO5_IO04        	0x1c3
 		>;
 	};
 
