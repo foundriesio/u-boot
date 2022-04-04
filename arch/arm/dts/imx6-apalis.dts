@@ -11,12 +11,6 @@
 	model = "Toradex Apalis iMX6Q/D";
 	compatible = "toradex,apalis_imx6q", "fsl,imx6q";
 
-	/* Will be filled by the bootloader */
-	memory@10000000 {
-		device_type = "memory";
-		reg = <0x10000000 0>;
-	};
-
 	aliases {
 		mmc0 = &usdhc3;
 		mmc1 = &usdhc1;
