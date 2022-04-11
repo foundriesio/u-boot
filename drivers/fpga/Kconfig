@@ -94,7 +94,7 @@ config FPGA_LOAD_SECURE
 
 config SPL_FPGA_LOAD_SECURE
 	bool "Enable loading secure bitstreams for SPL"
-	depends on FPGA
+	depends on SPL_FPGA
 	help
 	  Enables the fpga loads() functions that are used to load secure
 	  (authenticated or encrypted or both) bitstreams on to FPGA.
