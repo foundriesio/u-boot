@@ -9,6 +9,7 @@
 #include <common.h>
 #include <compiler.h>
 #include <cpu_func.h>
+#include <fpga.h>
 #include <log.h>
 #include <zynqmppl.h>
 #include <zynqmp_firmware.h>
@@ -232,11 +233,28 @@ static int zynqmp_load(xilinx_desc *desc, const void *buf,
 	u32 buf_lo, buf_hi;
 	u32 bsize_req = (u32)bsize;
 	u32 ret_payload[PAYLOAD_ARG_CNT];
-
+#if CONFIG_IS_ENABLED(FPGA_LOAD_SECURE)
+	struct fpga_secure_info info = { 0 };
+#endif
 	debug("%s called!\n", __func__);
 
 	if (zynqmp_check_compatible(desc, flags)) {
 		puts("Missing loads operation or unsupported bitstream type\n");
+		return FPGA_FAIL;
+	}
+
+	switch (flags) {
+	case FPGA_LEGACY:
+		break;	/* Handle the legacy image later in this function */
+#if CONFIG_IS_ENABLED(FPGA_LOAD_SECURE)
+	case FPGA_XILINX_ZYNQMP_DDRAUTH:
+		/* DDR authentication */
+		info.authflag = ZYNQMP_FPGA_AUTH_DDR;
+		info.encflag = FPGA_NO_ENC_OR_NO_AUTH;
+		return desc->operations->loads(desc, buf, bsize, &info);
+#endif
+	default:
+		puts("Unsupported bitstream type\n");
 		return FPGA_FAIL;
 	}
 
@@ -334,7 +352,10 @@ static int zynqmp_str2flag(xilinx_desc *desc, const char *str)
 {
 	if (!strncmp(str, "u-boot,fpga-legacy", 18))
 		return FPGA_LEGACY;
-
+#if CONFIG_IS_ENABLED(FPGA_LOAD_SECURE)
+	if (!strncmp(str, "u-boot,zynqmp-fpga-ddrauth", 26))
+		return FPGA_XILINX_ZYNQMP_DDRAUTH;
+#endif
 	return 0;
 }
 
