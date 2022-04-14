@@ -167,6 +167,24 @@ config ZYNQMP_PSU_INIT_ENABLED
 	help
 	  Include psu_init to full u-boot. SPL include psu_init by default.
 
+config ZYNQMP_CMD_BOOTSLOT
+	bool "Provide command for switching A/B boot slots"
+	default y
+	help
+	  Command for adjusting Persistent Register values, used by
+	  image-selector tool. For additional details check
+	  ZYNQMP_IMGSEL_PERSISTENT_REGISTER config symbol.
+
+config ZYNQMP_IMGSEL_PERSISTENT_REGISTER
+	default 0x100000
+	hex
+	help
+	  This option provides an address of persistent register offset,
+	  which is used by imgage selector tool for detecting current
+	  bootable slot (A/B). More detail at:
+	  https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/1641152513/Kria+K26+SOM
+	  https://github.com/Xilinx/embeddedsw/tree/master/lib/sw_apps/imgsel
+
 config SPL_ZYNQMP_ALT_BOOTMODE_ENABLED
 	bool "Overwrite SPL bootmode"
 	depends on SPL
