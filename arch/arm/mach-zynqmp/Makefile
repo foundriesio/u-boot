@@ -9,3 +9,7 @@ obj-$(CONFIG_MP)	+= mp.o
 obj-$(CONFIG_SPL_BUILD) += spl.o handoff.o
 obj-$(CONFIG_SPL_ZYNQMP_DRAM_ECC_INIT) += ecc_spl_init.o
 obj-$(CONFIG_ZYNQMP_PSU_INIT_ENABLED)	+= psu_spl_init.o
+
+ifneq ($(CONFIG_SPL_BUILD),y)
+obj-$(CONFIG_ZYNQMP_CMD_BOOTSLOT) += cmd_bootslot.o
+endif
