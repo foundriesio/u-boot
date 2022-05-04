@@ -109,7 +109,7 @@ static int dwc3_generic_probe(struct udevice *dev,
 		return rc;
 
 	if (device_is_compatible(dev->parent, "xlnx,zynqmp-dwc3")) {
-		ret = gpio_request_by_name(dev->parent, "reset-gpio", 0,
+		ret = gpio_request_by_name(dev->parent, "reset-gpios", 0,
 					   &priv->ulpi_reset, GPIOD_ACTIVE_LOW);
 		if (ret != -EBUSY && ret)
 			return ret;
