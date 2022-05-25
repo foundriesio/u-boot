@@ -64,8 +64,8 @@
 	"nfsboot=run netargs; dhcp ${loadaddr} ${boot_file}; " \
 		"tftp ${fdt_addr} verdin/${fdtfile}; " \
 		"booti ${loadaddr} - ${fdt_addr}\0" \
-	"setup=setenv setupargs console=${console},${baudrate} " \
-		"console=tty1 consoleblank=0 earlycon\0" \
+	"setup=setenv setupargs console=tty1 console=${console},${baudrate} " \
+		"consoleblank=0 earlycon\0" \
 	"update_uboot=askenv confirm Did you load flash.bin (y/N)?; " \
 		"if test \"$confirm\" = \"y\"; then " \
 		"setexpr blkcnt ${filesize} + 0x1ff && setexpr blkcnt " \
