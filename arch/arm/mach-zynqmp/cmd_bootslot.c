@@ -216,18 +216,22 @@ static int do_bootslot(struct cmd_tbl *cmdtp, int flag,
 
 	ret = init_spi_flash(&flash);
 	if (ret) {
-		printf("Can't init spi flash");
+		printf("Can't init spi flash\n");
 		return CMD_RET_FAILURE;
 	}
 
 	ret = read_persistent_info(flash);
-	if (ret)
-		return CMD_RET_FAILURE;
+	if (ret) {
+		printf("Can't read spi flash\n");
+		ret = CMD_RET_FAILURE;
+		goto free_spi;
+	}
 
 	/* If we just want to retrieve current persistent data info */
 	if (argc == 1) {
 		print_persistent_info();
-		return CMD_RET_SUCCESS;
+		ret = CMD_RET_SUCCESS;
+		goto free_spi;
 	}
 
 	slot_a = simple_strtoul(argv[1], NULL, 10);
@@ -236,17 +240,24 @@ static int do_bootslot(struct cmd_tbl *cmdtp, int flag,
 
 	if ((slot_a != 0 && slot_a != 1) ||
 	    (slot_b != 0 && slot_b != 1) ||
-	    (requested_slot != 0 && requested_slot != 1))
-		return CMD_RET_USAGE;
+	    (requested_slot != 0 && requested_slot != 1)) {
+		ret = CMD_RET_USAGE;
+		goto free_spi;
+	}
 
 	ret = update_persistent_info(flash, slot_a, slot_b, requested_slot);
 	if (ret) {
 		printf("Update of persistent registers failed\n");
-		return CMD_RET_FAILURE;
+		ret = CMD_RET_FAILURE;
+		goto free_spi;
 	}
+
 	print_persistent_info();
 
-	return CMD_RET_SUCCESS;
+free_spi:
+	spi_flash_free(flash);
+
+	return ret;
 }
 
 U_BOOT_CMD(
