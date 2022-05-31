@@ -63,7 +63,10 @@ DECLARE_GLOBAL_DATA_PTR;
 const u32 golden_image_boundary = 0x8000;
 
 #if CONFIG_IS_ENABLED(FPGA) && defined(CONFIG_FPGA_ZYNQMPPL)
-static xilinx_desc zynqmppl = XILINX_ZYNQMP_DESC;
+static xilinx_desc zynqmppl = {
+	xilinx_zynqmp, csu_dma, 1, &zynqmp_op, 0, &zynqmp_op, NULL,
+	ZYNQMP_FPGA_FLAGS
+};
 
 enum {
 	ZYNQMP_VARIANT_EG = BIT(0U),
