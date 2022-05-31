@@ -60,6 +60,7 @@ struct xilinx_fpga_op {
 		     struct fpga_secure_info *fpga_sec_info);
 	int (*dump)(xilinx_desc *desc, const void *buf, size_t bsize);
 	int (*info)(xilinx_desc *desc);
+	int (*str2flag)(xilinx_desc *desc, const char *string);
 };
 
 /* Generic Xilinx Functions
