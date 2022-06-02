@@ -709,14 +709,14 @@ int boot_get_fpga(int argc, char *const argv[], bootm_headers_t *images,
 						 img_len, BIT_FULL);
 			if (err)
 				err = fpga_load(devnum, (const void *)img_data,
-						img_len, BIT_FULL, NULL);
+						img_len, BIT_FULL);
 		} else {
 			name = "partial";
 			err = fpga_loadbitstream(devnum, (char *)img_data,
 						 img_len, BIT_PARTIAL);
 			if (err)
 				err = fpga_load(devnum, (const void *)img_data,
-						img_len, BIT_PARTIAL, NULL);
+						img_len, BIT_PARTIAL);
 		}
 
 		if (err)
