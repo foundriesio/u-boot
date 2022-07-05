@@ -202,9 +202,12 @@ static int zynqmp_validate_bitstream(xilinx_desc *desc, const void *buf,
 
 static int zynqmp_check_compatible(xilinx_desc *desc, int flags)
 {
-	/* If no flags set, the image is legacy */
+	/*
+	 * If no flags set, the image may be legacy, but we need to
+	 * signal caller this situation with specific eror code.
+	 */
 	if (!flags)
-		return 0;
+		return -ENODATA;
 
 	/* For legacy bitstream images no need for other methods exist */
 	if ((flags & desc->flags) && flags == FPGA_LEGACY)
@@ -219,7 +222,7 @@ static int zynqmp_check_compatible(xilinx_desc *desc, int flags)
 	    (flags & desc->flags))
 		return 0;
 
-	return FPGA_FAIL;
+	return -ENODEV;
 }
 
 static int zynqmp_load(xilinx_desc *desc, const void *buf,
@@ -238,9 +241,14 @@ static int zynqmp_load(xilinx_desc *desc, const void *buf,
 #endif
 	debug("%s called!\n", __func__);
 
-	if (zynqmp_check_compatible(desc, flags)) {
-		puts("Missing loads operation or unsupported bitstream type\n");
-		return FPGA_FAIL;
+	ret = zynqmp_check_compatible(desc, flags);
+	if (ret) {
+		if (ret != -ENODATA) {
+			puts("Missing loads operation or unsupported bitstream type\n");
+			return FPGA_FAIL;
+		}
+		/* If flags is not set, the image treats as legacy */
+		flags = FPGA_LEGACY;
 	}
 
 	switch (flags) {
@@ -259,7 +267,7 @@ static int zynqmp_load(xilinx_desc *desc, const void *buf,
 		return desc->operations->loads(desc, buf, bsize, &info);
 #endif
 	default:
-		puts("Unsupported bitstream type\n");
+		printf("Unsupported bitstream type %d\n", flags);
 		return FPGA_FAIL;
 	}
 
