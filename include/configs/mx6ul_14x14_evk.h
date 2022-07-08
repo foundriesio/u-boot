@@ -194,7 +194,7 @@
 #define CFG_SYS_NAND_BASE		0x40000000
 
 /* USB Configs */
-#ifdef CONFIG_CMD_USB
+#ifdef CONFIG_USB
 #define CFG_MXC_USB_PORTSC  (PORT_PTS_UTMI | PORT_PTS_PTW)
 #define CFG_MXC_USB_FLAGS   0
 #endif
