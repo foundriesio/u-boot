@@ -1198,6 +1198,28 @@ int fit_set_timestamp(void *fit, int noffset, time_t timestamp)
 	return 0;
 }
 
+#if CONFIG_IS_ENABLED(FIT_SIGNATURE_STRICT)
+# define ALGO_NAME_ENT(x)	{ x, sizeof(x) }
+static struct algo_name {
+	const char *name;
+	int len;
+} loose_algo[] = {
+	ALGO_NAME_ENT("crc32"),
+	ALGO_NAME_ENT("sha1"),
+	ALGO_NAME_ENT("md5"),
+};
+
+int weak_algo(const char *name)
+{
+	for (int i = 0; i < sizeof(loose_algo) / sizeof(loose_algo[0]); i++) {
+		if (!strncmp(name, loose_algo[i].name, loose_algo[i].len))
+		    return -1;
+	}
+
+	return 0;
+}
+#endif
+
 /**
  * calculate_hash - calculate and return hash for provided input data
  * @data: pointer to the input data
@@ -1230,6 +1252,12 @@ int calculate_hash(const void *data, int data_len, const char *name,
 		return -1;
 	}
 
+#if CONFIG_IS_ENABLED(FIT_SIGNATURE_STRICT)
+	if (weak_algo(name)) {
+		debug("Only strong hash algorithm accepted\n");
+		return -1;
+	}
+#endif
 	hash_algo = hash_algo_lookup_by_name(name);
 	if (hash_algo == HASH_ALGO_INVALID) {
 		debug("Unsupported hash algorithm\n");
@@ -1247,6 +1275,12 @@ int calculate_hash(const void *data, int data_len, const char *name,
 	struct hash_algo *algo;
 	int ret;
 
+#if CONFIG_IS_ENABLED(FIT_SIGNATURE_STRICT)
+	if (weak_algo(name)) {
+		debug("Only strong hash algorithm accepted\n");
+		return -1;
+	}
+#endif
 	ret = hash_lookup_algo(name, &algo);
 	if (ret < 0) {
 		debug("Unsupported hash alogrithm\n");
