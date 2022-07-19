@@ -572,6 +572,16 @@ config SHA_HW_ACCEL
 
 if SPL
 
+config SPL_CRC16
+	bool "Enable CRC16 support in SPL"
+	default y if !SPL_FIT_SIGNATURE_STRICT
+	help
+	  This option enables support of hashing using CRC16 algorithm.
+	  The CRC16 algorithm produces 16-bit checksum value. For FIT
+	  images, this is the least secure type of checksum, suitable for
+	  detected accidental image corruption. For secure applications you
+	  should consider SHA256 or SHA384.
+
 config SPL_CRC32
 	bool "Enable CRC32 support in SPL"
 	default y if SPL_LEGACY_IMAGE_SUPPORT || SPL_EFI_PARTITION
@@ -696,6 +706,11 @@ config SPL_CRC8
 	  a simple and fast checksumming algorithm which does a bytewise
 	  checksum with feedback to produce an 8-bit result. The code is small
 	  and it does not require a lookup table (unlike CRC32).
+
+config CRC16
+	def_bool y
+	help
+	  Enables CRC16 support in U-Boot.
 
 config CRC32
 	def_bool y
