@@ -192,8 +192,10 @@ int board_mmc_getcd(struct mmc *mmc)
 
 int power_init_board(void)
 {
+#if defined(CONFIG_POWER_PCA9450) || defined(CONFIG_POWER_BD71837)
 	struct pmic *p;
 	int ret;
+#endif
 
 #ifdef CONFIG_POWER_PCA9450
 #ifdef CONFIG_POWER_BD71837
