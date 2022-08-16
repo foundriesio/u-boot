@@ -14,6 +14,7 @@
 #include <micrel.h>
 #include <miiphy.h>
 #include <netdev.h>
+#include <usb.h>
 
 #include "../common/tdx-cfg-block.h"
 
@@ -50,6 +51,24 @@ int board_init(void)
 int board_mmc_get_env_dev(int devno)
 {
 	return devno;
+}
+
+int board_usb_init(int index, enum usb_init_type init)
+{
+	debug("%s: %d, type %d\n", __func__, index, init);
+
+	imx8m_usb_power(index, true);
+
+	return 0;
+}
+
+int board_usb_cleanup(int index, enum usb_init_type init)
+{
+	debug("%s: %d, type %d\n", __func__, index, init);
+
+	imx8m_usb_power(index, false);
+
+	return 0;
 }
 
 static enum pcb_rev_t get_pcb_revision(void)
