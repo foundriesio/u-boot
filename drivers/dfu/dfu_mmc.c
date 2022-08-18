@@ -362,9 +362,14 @@ int dfu_fill_entity_mmc(struct dfu_entity *dfu, char *devstr, char **argv, int a
 	second_arg = simple_strtol(argv[1], &s, 0);
 	if (*s)
 		return -EINVAL;
-	third_arg = simple_strtoul(argv[2], &s, 0);
-	if (*s)
-		return -EINVAL;
+	/*
+	 * The last parameter here can have a semi-colon(;) which luckily
+	 * worked with the old code, but this means the endp pointer returned
+	 * by simple_strtoul will be NULL.
+	 * TL;DR: Let's not validate the last parameter. It was working before:
+	 * u-boot commit 53b406369e9d0ba2da1df9b2488976c41acc6332
+	 */
+	third_arg = simple_strtoul(argv[2], NULL, 0);
 
 	mmc = find_mmc_device(dfu->data.mmc.dev_num);
 	if (mmc == NULL) {
