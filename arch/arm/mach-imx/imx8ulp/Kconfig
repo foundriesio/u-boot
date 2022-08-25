@@ -42,7 +42,7 @@ config TARGET_IMX8ULP_9X9_EVK
 	imply FSL_BLOB
 	select MISC
 	select ARCH_MISC_INIT
-	select SPL_CRYPTO_SUPPORT if SPL
+	select SPL_CRYPTO if SPL
 
 endchoice
 
