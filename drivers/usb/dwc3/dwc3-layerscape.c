@@ -134,7 +134,7 @@ U_BOOT_DRIVER(dwc3_layerscape_peripheral) = {
 };
 #endif
 
-#if defined(CONFIG_SPL_USB_HOST_SUPPORT) || \
+#if defined(CONFIG_SPL_USB_HOST) || \
 	!defined(CONFIG_SPL_BUILD) && defined(CONFIG_USB_HOST)
 static int dwc3_layerscape_host_probe(struct udevice *dev)
 {
@@ -194,7 +194,7 @@ static int dwc3_layerscape_bind(struct udevice *dev)
 		driver = "dwc3-layerscape-peripheral";
 		break;
 #endif
-#if defined(CONFIG_SPL_USB_HOST_SUPPORT) || !defined(CONFIG_SPL_BUILD)
+#if defined(CONFIG_SPL_USB_HOST) || !defined(CONFIG_SPL_BUILD)
 	case USB_DR_MODE_HOST:
 		dev_dbg(dev, "Using host mode\n");
 		driver = "dwc3-layerscape-host";
