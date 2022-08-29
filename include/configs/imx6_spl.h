@@ -75,8 +75,8 @@
 
 #if defined(CONFIG_MX6SX) || defined(CONFIG_MX6SL) || \
 	defined(CONFIG_MX6UL) || defined(CONFIG_MX6ULL)
-#define CONFIG_SPL_BSS_START_ADDR      0x88200000
-#define CONFIG_SPL_BSS_MAX_SIZE        0x100000		/* 1 MB */
+#define CONFIG_SPL_BSS_START_ADDR      0x882FE000
+#define CONFIG_SPL_BSS_MAX_SIZE        0x2000		/* 8 KB */
 #define CONFIG_SYS_SPL_MALLOC_START    0x88300000
 #define CONFIG_SYS_SPL_MALLOC_SIZE     0x100000		/* 1 MB */
 #else
