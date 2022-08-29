@@ -18,6 +18,7 @@
 #include <micrel.h>
 #include <miiphy.h>
 #include <netdev.h>
+#include <usb.h>
 
 #include "../common/tdx-cfg-block.h"
 
@@ -93,6 +94,24 @@ int board_init(void)
 		ret = setup_eqos();
 
 	return ret;
+}
+
+int board_usb_init(int index, enum usb_init_type init)
+{
+	debug("%s: %d, type %d\n", __func__, index, init);
+
+	imx8m_usb_power(index, true);
+
+	return 0;
+}
+
+int board_usb_cleanup(int index, enum usb_init_type init)
+{
+	debug("%s: %d, type %d\n", __func__, index, init);
+
+	imx8m_usb_power(index, false);
+
+	return 0;
 }
 
 static void select_dt_from_module_version(void)
