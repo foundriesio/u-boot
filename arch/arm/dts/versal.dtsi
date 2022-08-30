@@ -15,6 +15,29 @@
 	#size-cells = <2>;
 	model = "Xilinx Versal";
 
+	firmware {
+		optee {
+			compatible = "linaro,optee-tz";
+			method = "smc";
+		};
+	};
+
+	reserved-memory {
+		#size-cells = <2>;
+		#address-cells = <2>;
+		ranges;
+
+		optee_core@60000000 {
+			reg = <0x00 0x60000000 0x00 0x10000000>;
+			no-map;
+		};
+
+		optee_shm@70000000 {
+			reg = <0x00 0x70000000 0x00 0x10000000>;
+			no-map;
+		};
+	};
+
 	cpus: cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
