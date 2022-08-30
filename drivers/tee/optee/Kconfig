@@ -40,16 +40,15 @@ config OPTEE_TA_SCP03
 
 config TEE_I2C_NXP_SE05X_ERRATA
 	bool "Enable NXP SE05X Errata"
-       select TEE_I2C_NXP_SE05X_ERRATA_IN_BUS
 	default y
 	help
-         This config prevents the I2C trampoline driver from probing
-         on every transfer.
+	 This config prevents the I2C trampoline driver from probing
+	 on every transfer.
 
 config TEE_I2C_NXP_SE05X_ERRATA_IN_BUS
 	int "I2C bus where to apply the NXP SE05X errata"
-       depends on TEE_I2C_NXP_SE05X_ERRATA
-       default 0
+	depends on TEE_I2C_NXP_SE05X_ERRATA
+	default 0
 
 endmenu
 

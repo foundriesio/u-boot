@@ -40,18 +40,18 @@ static struct udevice *get_chip_dev(int bnum, int addr)
 	struct udevice *chip;
 	struct udevice *bus;
 
-	if (IS_ENABLED(CONFIG_TEE_I2C_NXP_SE05X_ERRATA)) {
-		if (bnum == CONFIG_TEE_I2C_NXP_SE05X_ERRATA_IN_BUS &&
-		    addr == NXP_SE05X_ADDR) {
-			if (uclass_get_device_by_seq(UCLASS_I2C, bnum, &bus))
-				return NULL;
+#if defined(CONFIG_TEE_I2C_NXP_SE05X_ERRATA)
+	if (bnum == CONFIG_TEE_I2C_NXP_SE05X_ERRATA_IN_BUS &&
+	    addr == NXP_SE05X_ADDR) {
+		if (uclass_get_device_by_seq(UCLASS_I2C, bnum, &bus))
+			return NULL;
 
-			if (i2c_get_chip(bus, addr, 0, &chip))
-				return NULL;
+		if (i2c_get_chip(bus, addr, 0, &chip))
+			return NULL;
 
-			return chip;
-		}
+		return chip;
 	}
+#endif
 
 	if (i2c_get_chip_for_busnum(bnum, addr, 0, &chip))
 		return NULL;
