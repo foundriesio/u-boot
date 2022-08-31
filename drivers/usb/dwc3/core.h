@@ -248,6 +248,7 @@
 /* Global Frame Length Adjustment Register */
 #define DWC3_GFLADJ_30MHZ_SDBND_SEL		(1 << 7)
 #define DWC3_GFLADJ_30MHZ_MASK			0x3f
+#define GFLADJ_REFCLK_FLADJ			GENMASK(21, 8)
 
 /* Device Configuration Register */
 #define DWC3_DCFG_DEVADDR(addr)	((addr) << 3)
@@ -405,11 +406,6 @@
 #define DWC3_DEPCMD_TYPE_ISOC		1
 #define DWC3_DEPCMD_TYPE_BULK		2
 #define DWC3_DEPCMD_TYPE_INTR		3
-
-/* Global Frame Length Adjustment Register */
-#define GFLADJ_30MHZ_REG_SEL		BIT(7)
-#define GFLADJ_30MHZ_MASK		GENMASK(5, 0)
-#define GFLADJ_REFCLK_FLADJ		GENMASK(21, 8)
 
 /* Structures */
 
@@ -705,6 +701,7 @@ struct dwc3_scratchpad_array {
  * @test_mode_nr: test feature selector
  * @lpm_nyet_threshold: LPM NYET response threshold
  * @hird_threshold: HIRD threshold
+ * @refclk_fladj: refclk adjustment parameter
  * @delayed_status: true when gadget driver asks for delayed status
  * @ep0_bounced: true when we used bounce buffer
  * @ep0_expect_in: true when we expect a DATA IN transfer
@@ -834,6 +831,7 @@ struct dwc3 {
 	u8			lpm_nyet_threshold;
 	u8			hird_threshold;
 	u32			fladj;
+	bool			refclk_fladj;
 	u8			incrx_mode;
 	u32			incrx_size;
 
