@@ -398,9 +398,6 @@ int board_late_init_xilinx(void)
 	if (CONFIG_IS_ENABLED(ARCH_ZYNQ) || CONFIG_IS_ENABLED(MICROBLAZE))
 		bootm_size = min(bootm_size, (phys_size_t)(SZ_512M + SZ_256M));
 
-	if (gd->ram_base + bootm_size > gd->ram_top)
-		bootm_size = gd->ram_top - gd->ram_base;
-
 	ret |= env_set_hex("script_offset_f", CONFIG_BOOT_SCRIPT_OFFSET);
 
 	ret |= env_set_addr("bootm_low", (void *)gd->ram_base);
