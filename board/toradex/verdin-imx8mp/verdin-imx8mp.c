@@ -19,6 +19,7 @@
 #include <miiphy.h>
 #include <netdev.h>
 #include <usb.h>
+#include <dwc3-uboot.h>
 
 #include "../common/tdx-cfg-block.h"
 
@@ -83,6 +84,134 @@ int board_phy_config(struct phy_device *phydev)
 }
 #endif
 
+#ifdef CONFIG_USB_DWC3
+
+#define USB_PHY_CTRL0			0xF0040
+#define USB_PHY_CTRL0_REF_SSP_EN	BIT(2)
+
+#define USB_PHY_CTRL1			0xF0044
+#define USB_PHY_CTRL1_RESET		BIT(0)
+#define USB_PHY_CTRL1_COMMONONN		BIT(1)
+#define USB_PHY_CTRL1_ATERESET		BIT(3)
+#define USB_PHY_CTRL1_VDATSRCENB0	BIT(19)
+#define USB_PHY_CTRL1_VDATDETENB0	BIT(20)
+
+#define USB_PHY_CTRL2			0xF0048
+#define USB_PHY_CTRL2_TXENABLEN0	BIT(8)
+
+#define USB_PHY_CTRL6			0xF0058
+
+#define HSIO_GPR_BASE					(0x32F10000U)
+#define HSIO_GPR_REG_0					(HSIO_GPR_BASE)
+#define HSIO_GPR_REG_0_USB_CLOCK_MODULE_EN_SHIFT	(1)
+#define HSIO_GPR_REG_0_USB_CLOCK_MODULE_EN		(0x1U << HSIO_GPR_REG_0_USB_CLOCK_MODULE_EN_SHIFT)
+
+static struct dwc3_device dwc3_device_data = {
+#ifdef CONFIG_SPL_BUILD
+	.maximum_speed = USB_SPEED_HIGH,
+#else
+	.maximum_speed = USB_SPEED_SUPER,
+#endif
+	.base = USB1_BASE_ADDR,
+	.dr_mode = USB_DR_MODE_PERIPHERAL,
+	.index = 0,
+	.power_down_scale = 2,
+};
+
+int usb_gadget_handle_interrupts(void)
+{
+	dwc3_uboot_handle_interrupt(0);
+	return 0;
+}
+
+static void dwc3_nxp_usb_phy_init(struct dwc3_device *dwc3)
+{
+	u32 RegData;
+
+	/* enable usb clock via hsio gpr */
+	RegData = readl(HSIO_GPR_REG_0);
+	RegData |= HSIO_GPR_REG_0_USB_CLOCK_MODULE_EN;
+	writel(RegData, HSIO_GPR_REG_0);
+
+	/* USB3.0 PHY signal fsel for 100M ref */
+	RegData = readl(dwc3->base + USB_PHY_CTRL0);
+	RegData = (RegData & 0xfffff81f) | (0x2a<<5);
+	writel(RegData, dwc3->base + USB_PHY_CTRL0);
+
+	RegData = readl(dwc3->base + USB_PHY_CTRL6);
+	RegData &=~0x1;
+	writel(RegData, dwc3->base + USB_PHY_CTRL6);
+
+	RegData = readl(dwc3->base + USB_PHY_CTRL1);
+	RegData &= ~(USB_PHY_CTRL1_VDATSRCENB0 | USB_PHY_CTRL1_VDATDETENB0 |
+			USB_PHY_CTRL1_COMMONONN);
+	RegData |= USB_PHY_CTRL1_RESET | USB_PHY_CTRL1_ATERESET;
+	writel(RegData, dwc3->base + USB_PHY_CTRL1);
+
+	RegData = readl(dwc3->base + USB_PHY_CTRL0);
+	RegData |= USB_PHY_CTRL0_REF_SSP_EN;
+	writel(RegData, dwc3->base + USB_PHY_CTRL0);
+
+	RegData = readl(dwc3->base + USB_PHY_CTRL2);
+	RegData |= USB_PHY_CTRL2_TXENABLEN0;
+	writel(RegData, dwc3->base + USB_PHY_CTRL2);
+
+	RegData = readl(dwc3->base + USB_PHY_CTRL1);
+	RegData &= ~(USB_PHY_CTRL1_RESET | USB_PHY_CTRL1_ATERESET);
+	writel(RegData, dwc3->base + USB_PHY_CTRL1);
+}
+#endif
+
+#if defined(CONFIG_USB_DWC3) || defined(CONFIG_USB_XHCI_IMX8M)
+#define USB2_PWR_EN IMX_GPIO_NR(1, 14)
+int board_usb_init(int index, enum usb_init_type init)
+{
+	int ret = 0;
+	imx8m_usb_power(index, true);
+
+	if (index == 0 && init == USB_INIT_DEVICE) {
+#ifdef CONFIG_USB_TCPC
+		ret = tcpc_setup_ufp_mode(&port1);
+		if (ret)
+			return ret;
+#endif
+		dwc3_nxp_usb_phy_init(&dwc3_device_data);
+		return dwc3_uboot_init(&dwc3_device_data);
+	} else if (index == 0 && init == USB_INIT_HOST) {
+#ifdef CONFIG_USB_TCPC
+		ret = tcpc_setup_dfp_mode(&port1);
+#endif
+		return ret;
+	} else if (index == 1 && init == USB_INIT_HOST) {
+		/* Enable GPIO1_IO14 for 5V VBUS */
+		gpio_request(USB2_PWR_EN, "usb2_pwr");
+		gpio_direction_output(USB2_PWR_EN, 1);
+	}
+
+	return 0;
+}
+
+int board_usb_cleanup(int index, enum usb_init_type init)
+{
+	int ret = 0;
+	if (index == 0 && init == USB_INIT_DEVICE) {
+		dwc3_uboot_exit(index);
+	} else if (index == 0 && init == USB_INIT_HOST) {
+#ifdef CONFIG_USB_TCPC
+		ret = tcpc_disable_src_vbus(&port1);
+#endif
+	} else if (index == 1 && init == USB_INIT_HOST) {
+		/* Disable GPIO1_IO14 for 5V VBUS */
+		gpio_direction_output(USB2_PWR_EN, 0);
+	}
+
+	imx8m_usb_power(index, false);
+
+return ret;
+}
+
+#endif
+
 int board_init(void)
 {
 	int ret = 0;
@@ -93,25 +222,11 @@ int board_init(void)
 	if (IS_ENABLED(CONFIG_DWC_ETH_QOS))
 		ret = setup_eqos();
 
+#if defined(CONFIG_USB_DWC3) || defined(CONFIG_USB_XHCI_IMX8M)
+	init_usb_clk();
+#endif
+
 	return ret;
-}
-
-int board_usb_init(int index, enum usb_init_type init)
-{
-	debug("%s: %d, type %d\n", __func__, index, init);
-
-	imx8m_usb_power(index, true);
-
-	return 0;
-}
-
-int board_usb_cleanup(int index, enum usb_init_type init)
-{
-	debug("%s: %d, type %d\n", __func__, index, init);
-
-	imx8m_usb_power(index, false);
-
-	return 0;
 }
 
 static void select_dt_from_module_version(void)
