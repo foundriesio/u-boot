@@ -163,25 +163,19 @@ static void dwc3_nxp_usb_phy_init(struct dwc3_device *dwc3)
 #endif
 
 #if defined(CONFIG_USB_DWC3) || defined(CONFIG_USB_XHCI_IMX8M)
+#define USB1_PWR_EN IMX_GPIO_NR(1, 12)
 #define USB2_PWR_EN IMX_GPIO_NR(1, 14)
 int board_usb_init(int index, enum usb_init_type init)
 {
-	int ret = 0;
 	imx8m_usb_power(index, true);
 
 	if (index == 0 && init == USB_INIT_DEVICE) {
-#ifdef CONFIG_USB_TCPC
-		ret = tcpc_setup_ufp_mode(&port1);
-		if (ret)
-			return ret;
-#endif
 		dwc3_nxp_usb_phy_init(&dwc3_device_data);
 		return dwc3_uboot_init(&dwc3_device_data);
 	} else if (index == 0 && init == USB_INIT_HOST) {
-#ifdef CONFIG_USB_TCPC
-		ret = tcpc_setup_dfp_mode(&port1);
-#endif
-		return ret;
+		/* Enable GPIO1_IO12 for 5V VBUS */
+		gpio_request(USB1_PWR_EN, "usb1_pwr");
+		gpio_direction_output(USB1_PWR_EN, 1);
 	} else if (index == 1 && init == USB_INIT_HOST) {
 		/* Enable GPIO1_IO14 for 5V VBUS */
 		gpio_request(USB2_PWR_EN, "usb2_pwr");
@@ -197,9 +191,8 @@ int board_usb_cleanup(int index, enum usb_init_type init)
 	if (index == 0 && init == USB_INIT_DEVICE) {
 		dwc3_uboot_exit(index);
 	} else if (index == 0 && init == USB_INIT_HOST) {
-#ifdef CONFIG_USB_TCPC
-		ret = tcpc_disable_src_vbus(&port1);
-#endif
+		/* Disable GPIO1_IO12 for 5V VBUS */
+		gpio_direction_output(USB1_PWR_EN, 0);
 	} else if (index == 1 && init == USB_INIT_HOST) {
 		/* Disable GPIO1_IO14 for 5V VBUS */
 		gpio_direction_output(USB2_PWR_EN, 0);
@@ -207,7 +200,7 @@ int board_usb_cleanup(int index, enum usb_init_type init)
 
 	imx8m_usb_power(index, false);
 
-return ret;
+	return ret;
 }
 
 #endif
