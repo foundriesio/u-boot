@@ -17,7 +17,7 @@ DECLARE_GLOBAL_DATA_PTR;
 #define IMAGE_MAX_HASHED_NODES		100
 
 struct checksum_algo checksum_algos[] = {
-#if CONFIG_IS_ENABLED(FIT_SIGNATURE_STRICT)
+#if !CONFIG_IS_ENABLED(FIT_SIGNATURE_STRICT)
 	{
 		.name = "sha1",
 		.checksum_len = SHA1_SUM_LEN,
