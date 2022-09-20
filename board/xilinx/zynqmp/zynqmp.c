@@ -421,7 +421,11 @@ static int do_multi_boot(struct cmd_tbl *cmdtp, int flag,
 	if (argc == 1) {
 		multiboot = multi_boot_get();
 
-		printf("Multiboot: \t%d\n", multiboot);
+		printf("Multiboot register: \t0x%x (dec: %d)\n", multiboot,
+		       multiboot);
+		if (!strcmp(env_get("modeboot"), "qspiboot"))
+			printf("QSPI boot offset: \t0x%x\n", multiboot *
+			       golden_image_boundary);
 
 		if (multiboot > 1)
 			ret = env_set("fiovb.is_secondary_boot", "1");
@@ -434,7 +438,7 @@ static int do_multi_boot(struct cmd_tbl *cmdtp, int flag,
 		return CMD_RET_SUCCESS;
 	}
 
-	if (strict_strtoul(argv[1], 10, &multiboot) < 0) {
+	if (strict_strtoul(argv[1], 0, &multiboot) < 0) {
 		printf("Incorrect value of multiboot offset\n");
 		return CMD_RET_USAGE;
 	}
@@ -446,7 +450,7 @@ static int do_multi_boot(struct cmd_tbl *cmdtp, int flag,
 		    boot_image_offset != CONFIG_SYS_SPI_BOOT_IMAGE_OFFS2 &&
 		    boot_image_offset != 0) {
 			printf("Invalid value of multiboot register, "
-			       "supported values are: 0, %d, %d\n",
+			       "supported values are: 0x0, 0x%x, 0x%x\n",
 			       (CONFIG_SYS_SPI_BOOT_IMAGE_OFFS /
 				golden_image_boundary),
 			       (CONFIG_SYS_SPI_BOOT_IMAGE_OFFS2 /
@@ -456,7 +460,11 @@ static int do_multi_boot(struct cmd_tbl *cmdtp, int flag,
 	}
 #endif
 
-	printf("Set multiboot offset to: \t%d\n", multiboot);
+	printf("Set multiboot register to: \t0x%x (dec: %d)\n", multiboot,
+	       multiboot);
+	if (!strcmp(env_get("modeboot"), "qspiboot"))
+		printf("QSPI boot offset to be used after reboot: \t0x%x\n",
+		       multiboot * golden_image_boundary);
 
 	multi_boot_set(multiboot);
 
@@ -467,8 +475,8 @@ U_BOOT_CMD(
 	multi_boot, CONFIG_SYS_MAXARGS, 1, do_multi_boot,
 	"Get/Set CSU multiboot register",
 	"\n"
-	"   no param  - get current offset value\n"
-	"   offset - set offset of the boot image in decimal\n"
+	"   no param  - get current register/offset value\n"
+	"   value - set multi_boot register\n"
 );
 
 static int do_is_boot_authenticated(struct cmd_tbl *cmdtp, int flag,
