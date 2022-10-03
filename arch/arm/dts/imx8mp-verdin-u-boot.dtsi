@@ -74,6 +74,10 @@
 
 };
 
+&crypto {
+	u-boot,dm-spl;
+};
+
 &eqos {
 	compatible = "fsl,imx-eqos";
 	/delete-property/ assigned-clocks;
@@ -147,6 +151,18 @@
 };
 
 &reg_usdhc2_vmmc {
+	u-boot,dm-spl;
+};
+
+&sec_jr0 {
+	u-boot,dm-spl;
+};
+
+&sec_jr1 {
+	u-boot,dm-spl;
+};
+
+&sec_jr2 {
 	u-boot,dm-spl;
 };
 
