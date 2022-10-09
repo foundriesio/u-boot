@@ -67,13 +67,6 @@ struct usbnc_regs {
 };
 
 #if defined(CONFIG_MX6) || defined(CONFIG_MX7ULP) || defined(CONFIG_IMXRT) || defined(CONFIG_IMX8) || defined(CONFIG_IMX8ULP)
-static const ulong phy_bases[] = {
-	USB_PHY0_BASE_ADDR,
-#if defined(USB_PHY1_BASE_ADDR)
-	USB_PHY1_BASE_ADDR,
-#endif
-};
-
 int usb_phy_mode(int port)
 {
 	void __iomem *phy_reg;
