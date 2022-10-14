@@ -227,6 +227,12 @@ config FASTBOOT_OEM_RUN
 	  this feature if you are using verified boot, as it will allow an
 	  attacker to bypass any restrictions you have in place.
 
+config FASTBOOT_CMD_OEM_UCMD
+	bool "Enable the 'oem ucmd' command"
+	help
+	  Add support for the "oem ucmd" command from a client. This remotely
+	  executes a u-boot cmd.
+
 endif # FASTBOOT
 
 endmenu
