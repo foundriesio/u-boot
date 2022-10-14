@@ -48,6 +48,9 @@ static void oem_partconf(char *, char *);
 #if CONFIG_IS_ENABLED(FASTBOOT_CMD_OEM_BOOTBUS)
 static void oem_bootbus(char *, char *);
 #endif
+#if CONFIG_IS_ENABLED(FASTBOOT_CMD_OEM_UCMD)
+static void oem_ucmd(char *, char *);
+#endif
 
 #if CONFIG_IS_ENABLED(FASTBOOT_UUU_SUPPORT)
 static void run_ucmd(char *, char *);
@@ -120,6 +123,12 @@ static const struct {
 	[FASTBOOT_COMMAND_OEM_BOOTBUS] = {
 		.command = "oem bootbus",
 		.dispatch = oem_bootbus,
+	},
+#endif
+#if CONFIG_IS_ENABLED(FASTBOOT_CMD_OEM_UCMD)
+	[FASTBOOT_COMMAND_OEM_UCMD] = {
+		.command = "oem ucmd",
+		.dispatch = oem_ucmd,
 	},
 #endif
 #if CONFIG_IS_ENABLED(FASTBOOT_UUU_SUPPORT)
@@ -339,6 +348,28 @@ static void erase(char *cmd_parameter, char *response)
 #if CONFIG_IS_ENABLED(FASTBOOT_FLASH_NAND)
 	fastboot_nand_erase(cmd_parameter, response);
 #endif
+}
+#endif
+
+#if CONFIG_IS_ENABLED(FASTBOOT_CMD_OEM_UCMD)
+/**
+ * oem_ucmd() - Execute remote commands
+ *
+ * @cmd_parameter: Pointer to command parameter
+ * @response: Pointer to fastboot response buffer
+ */
+static void oem_ucmd(char *cmd_parameter, char *response)
+{
+	if (!cmd_parameter) {
+		pr_err("missing command\n");
+		fastboot_fail("missing command", response);
+		return;
+	}
+
+	if (run_command(cmd_parameter, 0))
+		fastboot_fail("", response);
+	else
+		fastboot_okay(NULL, response);
 }
 #endif
 
