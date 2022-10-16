@@ -1235,7 +1235,7 @@ int enable_pcie_clock(void)
 }
 #endif
 
-#ifdef CONFIG_IMX_HAB
+#if CONFIG_IS_ENABLED(IMX_HAB)
 void hab_caam_clock_enable(unsigned char enable)
 {
 	u32 reg;

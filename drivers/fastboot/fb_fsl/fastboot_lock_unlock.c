@@ -88,7 +88,7 @@ bool valid_tos() {
 	 * Or check the IVT only.
 	 */
 	bool valid = false;
-#ifdef CONFIG_IMX_HAB
+#if CONFIG_IS_ENABLED(IMX_HAB)
 	if (is_hab_enabled()) {
 		valid = authenticate_image(TRUSTY_OS_ENTRY, TRUSTY_OS_PADDED_SZ);
 	} else

@@ -361,7 +361,7 @@ void clock_init(void)
 	enable_usboh3_clk(1);
 }
 
-#ifdef CONFIG_IMX_HAB
+#if CONFIG_IS_ENABLED(IMX_HAB)
 void hab_caam_clock_enable(unsigned char enable)
 {
        if (enable)

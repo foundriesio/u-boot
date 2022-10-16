@@ -310,7 +310,7 @@ static u32 get_root_clk(enum clk_root_index clock_id)
 	return root_src_clk / (post_podf + 1) / (pre_podf + 1);
 }
 
-#ifdef CONFIG_IMX_HAB
+#if CONFIG_IS_ENABLED(IMX_HAB)
 void hab_caam_clock_enable(unsigned char enable)
 {
 	/* The CAAM clock is always on for iMX8M */

@@ -39,7 +39,7 @@
 
 #define CONFIG_SYS_SPI_ST_ENABLE_WP_PIN
 
-#ifdef CONFIG_IMX_HAB
+#if CONFIG_IS_ENABLED(IMX_HAB)
 #define HAB_EXTRA_SETTINGS \
 	"hab_check_addr=" \
 		"if hab_auth_img ${check_addr} ${filesize} ; then " \

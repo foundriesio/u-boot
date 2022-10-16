@@ -137,7 +137,7 @@ struct imx_sec_config_fuse_t {
 	int word;
 };
 
-#if defined(CONFIG_IMX_HAB)
+#if CONFIG_IS_ENABLED(IMX_HAB)
 extern struct imx_sec_config_fuse_t const imx_sec_config_fuse;
 #endif
 

@@ -122,7 +122,7 @@ int arch_auxiliary_core_up(u32 core_id, ulong addr)
 
 	/* Enable MCU */
 #ifdef CONFIG_IMX8M
-#if defined(CONFIG_IMX_HAB) && defined(CONFIG_ANDROID_SUPPORT)
+#if CONFIG_IS_ENABLED(IMX_HAB) && defined(CONFIG_ANDROID_SUPPORT)
 	extern int authenticate_image(
 		uint32_t ddr_start, uint32_t raw_image_size);
 	if (authenticate_image(addr, ANDROID_MCU_FIRMWARE_SIZE) != 0) {
