@@ -10,4 +10,13 @@
 		compatible = "u-boot,fwu-mdata-gpt";
 		fwu-mdata-store = <&sdmmc1>;
 	};
+#ifdef CONFIG_OPTEE
+	firmware {
+		optee {
+			compatible = "linaro,optee-tz";
+			method = "smc";
+			rpmb-dev = <&sdmmc1>;
+		};
+	};
+#endif
 };
