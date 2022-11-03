@@ -1,148 +1,158 @@
-//SPDX - License - Identifier:	GPL-2.0+
 /*
  * (C) Copyright 2019, Foundries.IO
- * Jorge Ramirez-Ortiz <jorge@foundries.io>
  *
+ * SPDX-License-Identifier:	GPL-2.0+
  */
-
 #include <common.h>
 #include <command.h>
 #include <env.h>
-#include <fiovb.h>
 #include <image.h>
-#include <linux/types.h>
 #include <malloc.h>
 #include <mmc.h>
+#include <fiovb.h>
 #include <asm/arch/sys_proto.h>
 
-enum fiovb_op { fiovb_rd, fiovb_wr, fiovb_del };
+#define FIOVB_NAME_LEN	40
 
-static int update_environment(enum fiovb_op op, const char *name,
-			      const char *val, size_t len)
+static struct fiovb_ops *fiovb_ops;
+
+int do_fiovb_init(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
 {
-	char fiovb_name[40] = { };
-	char fiovb_val[32] = { };
+	unsigned long mmc_dev;
 
-	switch (op) {
-	case fiovb_rd:
-		printf("Read %zu bytes [%s]\n", len, val);
+	if (argc != 2)
+		return CMD_RET_USAGE;
+
+	mmc_dev = simple_strtoul(argv[1], NULL, 16);
+
+	if (fiovb_ops)
+		fiovb_ops_free(fiovb_ops);
+
+	fiovb_ops = fiovb_ops_alloc(mmc_dev);
+	if (fiovb_ops)
+		return CMD_RET_SUCCESS;
+
+	printf("Failed to initialize fiovb\n");
+
+	return CMD_RET_FAILURE;
+}
+
+int do_fiovb_read_pvalue(struct cmd_tbl *cmdtp, int flag, int argc,
+		         char * const argv[])
+{
+	const char *name;
+	size_t bytes;
+	size_t bytes_read;
+	void *buffer;
+	char *endp;
+	char fiovb_name[FIOVB_NAME_LEN] = { 0 }; /* fiovb.name */
+	char fiovb_val[32] = { 0 };
+
+	if (!fiovb_ops) {
+		printf("Foundries.IO Verified Boot is not initialized, run 'fiovb init' first\n");
+		return CMD_RET_FAILURE;
+	}
+
+	if (argc != 3)
+		return CMD_RET_USAGE;
+
+	name = argv[1];
+	bytes = simple_strtoul(argv[2], &endp, 10);
+	if (*endp && *endp != '\n')
+		return CMD_RET_USAGE;
+
+	buffer = malloc(bytes);
+	if (!buffer)
+		return CMD_RET_FAILURE;
+
+	if (fiovb_ops->read_persistent_value(fiovb_ops, name, bytes, buffer,
+					   &bytes_read) == FIOVB_IO_RESULT_OK) {
+		printf("Read %zu bytes, value = %s\n", bytes_read,
+		       (char *)buffer);
+		/* Mirror fiovb variables into the environment */
 		snprintf(fiovb_name, sizeof(fiovb_name), "fiovb.%s", name);
-		snprintf(fiovb_val, sizeof(fiovb_val), "%s", val);
+		snprintf(fiovb_val, sizeof(fiovb_val), "%s", (char *)buffer);
 		env_set(fiovb_name, fiovb_val);
-		break;
-	case fiovb_wr:
-		printf("Wrote %zu bytes\n", strlen(val) + 1);
-		snprintf(fiovb_name, sizeof(fiovb_name), "fiovb.%s", name);
-		env_set(fiovb_name, val);
-		break;
-	case fiovb_del:
-		printf("Deleted %s\n", name);
-		snprintf(fiovb_name, sizeof(fiovb_name), "fiovb.%s", name);
-		env_set(fiovb_name, NULL);
-		break;
-	default:
-		printf("Invalid operation");
-		return CMD_RET_FAILURE;
+		free(buffer);
+		return CMD_RET_SUCCESS;
 	}
 
-	return CMD_RET_SUCCESS;
+	printf("Failed to read persistent value\n");
+
+	free(buffer);
+
+	return CMD_RET_FAILURE;
 }
 
-int do_fiovb_read(struct cmd_tbl *c, int flag, int argc, char *const argv[])
+int do_fiovb_write_pvalue(struct cmd_tbl *cmdtp, int flag, int argc,
+			  char * const argv[])
 {
-	enum fiovb_ret err = FIOVB_OK;
-	const char *name = NULL;
-	char *val = NULL;
-	char *p = NULL;
-	size_t bytes = 0;
-	size_t olen = 0;
-	int ret = 0;
+	const char *name;
+	const char *value;
+	char fiovb_name[FIOVB_NAME_LEN] = { 0 }; /* fiovb.name */
 
-	if (argc != 3)
-		return CMD_RET_USAGE;
-
-	bytes = simple_strtoul(argv[2], &p, 10);
-	if (*p && *p != '\n')
-		return CMD_RET_USAGE;
-
-	name = argv[1];
-	val = malloc(bytes);
-	if (!val)
-		return CMD_RET_FAILURE;
-
-	err = fiovb_read(name, bytes, val, &olen);
-	if (err) {
-		printf("fiovb read failed (err = %d)\n", err);
-		free(val);
+	if (!fiovb_ops) {
+		printf("Foundries.IO Verified Boot is not initialized, run 'fiovb init' first\n");
 		return CMD_RET_FAILURE;
 	}
-
-	ret = update_environment(fiovb_rd, name, val, olen);
-	free(val);
-
-	return ret;
-}
-
-int do_fiovb_write(struct cmd_tbl *c, int flag, int argc, char *const argv[])
-{
-	enum fiovb_ret err = FIOVB_OK;
-	const char *name = NULL;
-	const char *val = NULL;
 
 	if (argc != 3)
 		return CMD_RET_USAGE;
 
 	name = argv[1];
-	val = argv[2];
+	value = argv[2];
 
-	err = fiovb_write(name, strlen(val) + 1, val);
-	if (err) {
-		printf("fiovb write failed (err = %d)\n", err);
-		return CMD_RET_FAILURE;
+	if (fiovb_ops->write_persistent_value(fiovb_ops, name, strlen(value) + 1,
+					    (const uint8_t *)value) ==
+	    FIOVB_IO_RESULT_OK) {
+		printf("Wrote %zu bytes\n", strlen(value) + 1);
+		snprintf(fiovb_name, sizeof(fiovb_name), "fiovb.%s", name);
+		env_set(fiovb_name, value);
+		return CMD_RET_SUCCESS;
 	}
 
-	return update_environment(fiovb_wr, name, val, 0);
+	printf("Failed to write persistent value\n");
+
+	return CMD_RET_FAILURE;
 }
 
-int do_fiovb_delete(struct cmd_tbl *c, int flag, int argc, char *const argv[])
+int do_fiovb_delete_pvalue(struct cmd_tbl *cmdtp, int flag, int argc,
+			   char * const argv[])
 {
-	enum fiovb_ret err = FIOVB_OK;
-	const char *name = NULL;
+	const char *name;
+	char fiovb_name[FIOVB_NAME_LEN] = { 0 }; /* fiovb.name */
+
+	if (!fiovb_ops) {
+		printf("Foundries.IO Verified Boot is not initialized, run 'fiovb init' first\n");
+		return CMD_RET_FAILURE;
+	}
 
 	if (argc != 2)
 		return CMD_RET_USAGE;
 
 	name = argv[1];
 
-	err = fiovb_delete(name);
-	if (err) {
-		printf("fiovb delete failed (err = %d)\n", err);
-		return CMD_RET_FAILURE;
+	if (fiovb_ops->delete_persistent_value(fiovb_ops, name) ==
+	    FIOVB_IO_RESULT_OK) {
+		printf("Deleted persistent value %s\n", name);
+		snprintf(fiovb_name, sizeof(fiovb_name), "fiovb.%s", name);
+		env_set(fiovb_name, NULL);
+		return CMD_RET_SUCCESS;
 	}
 
-	return update_environment(fiovb_del, name, NULL, 0);
-}
+	printf("Failed to delete persistent value\n");
 
-int do_fiovb_init(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
-{
-	return CMD_RET_SUCCESS;
+	return CMD_RET_FAILURE;
 }
-
-#define LEGACY_OPS \
-	U_BOOT_CMD_MKENT(delete_pvalue, 2, 0, do_fiovb_delete, "", ""), \
-	U_BOOT_CMD_MKENT(write_pvalue, 3, 0, do_fiovb_write, "", ""),\
-	U_BOOT_CMD_MKENT(read_pvalue, 3, 0, do_fiovb_read, "", ""),\
-	U_BOOT_CMD_MKENT(init, 2, 0, do_fiovb_init, "", "")
 
 static struct cmd_tbl cmd_fiovb[] = {
-	U_BOOT_CMD_MKENT(delete, 2, 0, do_fiovb_delete, "", ""),
-	U_BOOT_CMD_MKENT(write, 3, 0, do_fiovb_write, "", ""),
-	U_BOOT_CMD_MKENT(read, 3, 0, do_fiovb_read, "", ""),
-	LEGACY_OPS,
+	U_BOOT_CMD_MKENT(init, 2, 0, do_fiovb_init, "", ""),
+	U_BOOT_CMD_MKENT(read_pvalue, 3, 0, do_fiovb_read_pvalue, "", ""),
+	U_BOOT_CMD_MKENT(write_pvalue, 3, 0, do_fiovb_write_pvalue, "", ""),
+	U_BOOT_CMD_MKENT(delete_pvalue, 2, 0, do_fiovb_delete_pvalue, "", ""),
 };
 
-static int do_fiovb(struct cmd_tbl *cmdtp, int flag, int argc,
-		    char * const argv[])
+static int do_fiovb(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[])
 {
 	struct cmd_tbl *cp;
 
@@ -162,9 +172,10 @@ static int do_fiovb(struct cmd_tbl *cmdtp, int flag, int argc,
 
 U_BOOT_CMD(
 	fiovb, 29, 0, do_fiovb,
-	"Foundries.io Verified Boot\n"
-	" - valid names: m4hash, bootcount, upgrade_available, rollback",
-	"\n\tread   <name> <bytes>  - reads   persistent value <name>\n"
-	"\twrite  <name> <value>  - writes  persistent value <name>\n"
-	"\tdelete <name>          - delete  persistent value <name>\n"
-);
+	"Provides commands for testing Foundries.IO verified boot functionality"
+	" - supported value names: m4hash, bootcount, upgrade_available and rollback",
+	"init <dev> - initialize fiovb for <dev>\n"
+	"read_pvalue <name> <bytes> - read a persistent value <name>\n"
+	"write_pvalue <name> <value> - write a persistent value <name>\n"
+	"delete_pvalue <name> - delete a persistent value <name>\n"
+	);
