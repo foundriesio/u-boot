@@ -96,14 +96,14 @@ void optee_suppl_cmd_i2c_transfer(struct optee_msg_arg *arg)
 
 	switch (arg->params[0].u.value.a) {
 	case OPTEE_MSG_RPC_CMD_I2C_TRANSFER_RD:
-		log_debug("OPTEE_MSG_RPC_CMD_I2C_TRANSFER_RD %d\n",
+		log_debug("OPTEE_MSG_RPC_CMD_I2C_TRANSFER_RD %zd\n",
 			  (size_t)arg->params[2].u.rmem.size);
 
 		ret = dm_i2c_read(chip_dev, 0, buf,
 				  (size_t)arg->params[2].u.rmem.size);
 		break;
 	case OPTEE_MSG_RPC_CMD_I2C_TRANSFER_WR:
-		log_debug("OPTEE_MSG_RPC_CMD_I2C_TRANSFER_WR %d\n",
+		log_debug("OPTEE_MSG_RPC_CMD_I2C_TRANSFER_WR %zd\n",
 			  (size_t)arg->params[2].u.rmem.size);
 
 		ret = dm_i2c_write(chip_dev, 0, buf,
