@@ -682,7 +682,8 @@ enum boot_device get_boot_device(void)
 }
 #endif
 
-#if defined(CONFIG_IMX8M)
+#if !defined(CONFIG_SECONDARY_BOOT_RUNTIME_DETECTION) && \
+    defined(CONFIG_IMX8M)
 #include <spl.h>
 int spl_mmc_emmc_boot_partition(struct mmc *mmc)
 {
