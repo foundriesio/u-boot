@@ -723,7 +723,8 @@ int arch_initr_trap(void)
 struct rom_api *g_rom_api = (struct rom_api *)0x980;
 #endif
 
-#if defined(CONFIG_IMX8M)
+#if !defined(CONFIG_SECONDARY_BOOT_RUNTIME_DETECTION) && \
+    defined(CONFIG_IMX8M)
 #include <spl.h>
 int spl_mmc_emmc_boot_partition(struct mmc *mmc)
 {
