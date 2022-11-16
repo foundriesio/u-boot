@@ -16,6 +16,7 @@
 			compatible = "linaro,optee-tz";
 			method = "smc";
 			rpmb-dev = <&sdmmc1>;
+			u-boot,dm-pre-reloc;
 		};
 	};
 #endif
