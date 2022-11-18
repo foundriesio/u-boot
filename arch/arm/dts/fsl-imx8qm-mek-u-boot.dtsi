@@ -24,6 +24,14 @@
 		status = "okay";
 		u-boot,dm-spl;
 	};
+
+	firmware {
+		optee {
+			compatible = "linaro,optee-tz";
+			method = "smc";
+			rpmb-dev = <&usdhc1>;
+		};
+	};
 };
 
 &{/imx8qm-pm} {
