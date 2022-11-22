@@ -340,7 +340,7 @@ static int zynqmp_loads(xilinx_desc *desc, const void *buf, size_t bsize,
 			 (u32)(uintptr_t)fpga_sec_info->userkey_addr,
 			 flag, ret_payload);
 	if (ret)
-		puts("PL FPGA LOAD fail\n");
+		printf("PL FPGA LOADS failed with err: 0x%08x\n", ret);
 	else
 		puts("Bitstream successfully loaded\n");
 
