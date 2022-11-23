@@ -275,17 +275,19 @@
 	#define FDT_FILE	"fdt_file=undefined\0"
 #endif
 
+#if !defined(CONFIG_SYS_MMC_ENV_DEV)
 /* On LPDDR4 board, USDHC1 is for eMMC, USDHC2 is for SD on CPU board */
 #if defined(CONFIG_TARGET_IMX8QM_MEK_A72_ONLY)
 	#define CONFIG_SYS_MMC_ENV_DEV		0  /* USDHC1 */
-	#define CONFIG_MMCROOT			"/dev/mmcblk0p2"  /* USDHC1 */
 #elif defined(CONFIG_TARGET_IMX8QM_MEK_A53_ONLY)
 	#define CONFIG_SYS_MMC_ENV_DEV		1  /* USDHC2 */
-	#define CONFIG_MMCROOT			"/dev/mmcblk1p2"  /* USDHC2 */
 #else
 	#define CONFIG_SYS_MMC_ENV_DEV		1  /* USDHC2 */
-	#define CONFIG_MMCROOT			"/dev/mmcblk1p2"  /* USDHC2 */
 #endif
+#endif
+
+#define CONFIG_MMCROOT		"/dev/mmcblk" CONFIG_SYS_MMC_ENV_DEV "p2"
+
 #define CONFIG_SYS_FSL_USDHC_NUM	2
 
 #if defined(CONFIG_TARGET_IMX8QM_MEK_A72_ONLY)
