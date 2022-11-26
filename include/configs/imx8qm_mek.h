@@ -286,7 +286,7 @@
 #endif
 #endif
 
-#define CONFIG_MMCROOT		"/dev/mmcblk" CONFIG_SYS_MMC_ENV_DEV "p2"
+#define CONFIG_MMCROOT		"/dev/mmcblk"__stringify(CONFIG_SYS_MMC_ENV_DEV)"p2"
 
 #define CONFIG_SYS_FSL_USDHC_NUM	2
 
