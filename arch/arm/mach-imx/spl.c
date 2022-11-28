@@ -349,7 +349,7 @@ void *board_spl_fit_buffer_addr(ulong fit_size, int sectors, int bl_len)
 		bl_len = 512;
 
 	if (is_imx8qm() || is_imx8qxp() || is_imx8dxl())
-		base_addr = 0x80280000;
+		base_addr = 0x83000000;
 	else
 		base_addr = CONFIG_SYS_TEXT_BASE;
 
