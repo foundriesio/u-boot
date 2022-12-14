@@ -152,6 +152,9 @@ struct apu_regs {
 #define CSU_JTAG_CHAIN_WR_SETUP		GENMASK(1, 0)
 #define CSU_PCAP_PROG_RELEASE_PL	BIT(0)
 
+#define ZYNQMP_CSU_STATUS_AUTHENTICATED	BIT(0)
+#define ZYNQMP_CSU_STATUS_ENCRYPTED	BIT(1)
+
 struct csu_regs {
 	u32 status;
 	u32 reserved0[3];
