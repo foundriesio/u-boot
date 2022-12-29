@@ -12,6 +12,10 @@
 #include <asm/arch/imx-regs.h>
 #include "imx_env.h"
 
+#ifdef CONFIG_SPL
+#include "imx7ulp_spl.h"
+#endif
+
 #define CONFIG_BOARD_POSTCLK_INIT
 #define CONFIG_SYS_BOOTM_LEN		0x1000000
 
@@ -132,6 +136,8 @@
 	(CONFIG_SYS_INIT_RAM_SIZE - GENERATED_GBL_DATA_SIZE)
 #define CONFIG_SYS_INIT_SP_ADDR \
 	(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
+
+#define CONFIG_ARMV7_SECURE_BASE	0x2F000000
 
 /* USB Configs */
 #define CONFIG_MXC_USB_PORTSC  (PORT_PTS_UTMI | PORT_PTS_PTW)
