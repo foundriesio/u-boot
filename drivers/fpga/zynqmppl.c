@@ -253,24 +253,39 @@ static int zynqmp_load(xilinx_desc *desc, const void *buf,
 
 	switch (flags) {
 	case FPGA_LEGACY:
-		break;	/* Handle the legacy image later in this function */
+		/* Handle the legacy image later in this function */
+		goto fpga_legacy;
 #if CONFIG_IS_ENABLED(FPGA_LOAD_SECURE)
 	case FPGA_XILINX_ZYNQMP_DDRAUTH:
 		/* DDR authentication */
 		info.authflag = ZYNQMP_FPGA_AUTH_DDR;
 		info.encflag = FPGA_NO_ENC_OR_NO_AUTH;
-		return desc->operations->loads(desc, buf, bsize, &info);
+		break;
 	case FPGA_XILINX_ZYNQMP_ENC:
 		/* Encryption using device key */
 		info.authflag = FPGA_NO_ENC_OR_NO_AUTH;
 		info.encflag = FPGA_ENC_DEV_KEY;
-		return desc->operations->loads(desc, buf, bsize, &info);
+		break;
 #endif
 	default:
 		printf("Unsupported bitstream type %d\n", flags);
 		return FPGA_FAIL;
 	}
 
+#if CONFIG_IS_ENABLED(FPGA_LOAD_SECURE)
+	/* Handle secure images */
+	ret = desc->operations->loads(desc, buf, bsize, &info);
+#if IS_ENABLED(CONFIG_FPGA_LOAD_SECURE_STRICT)
+	return ret;
+#else
+	if (!ret)
+		return ret;
+	else
+		printf("Fallback to load legacy bitstream.\n");
+#endif
+#endif
+
+fpga_legacy:
 	if (zynqmp_firmware_version() <= PMUFW_V1_0) {
 		puts("WARN: PMUFW v1.0 or less is detected\n");
 		puts("WARN: Not all bitstream formats are supported\n");

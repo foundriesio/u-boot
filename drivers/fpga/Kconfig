@@ -99,4 +99,7 @@ config SPL_FPGA_LOAD_SECURE
 	  Enables the fpga loads() functions that are used to load secure
 	  (authenticated or encrypted or both) bitstreams on to FPGA.
 
+config FPGA_LOAD_SECURE_STRICT
+	bool "Disable fallback to load legacy FPGA bitstream"
+	depends on (FPGA_LOAD_SECURE || SPL_FPGA_LOAD_SECURE)
 endmenu
