@@ -11,6 +11,7 @@
 #include <dfu.h>
 #include <env.h>
 #include <env_internal.h>
+#include <hang.h>
 #include <init.h>
 #include <image.h>
 #include <lmb.h>
