@@ -409,6 +409,7 @@ static void print_secure_boot(void)
 	       status & ZYNQMP_CSU_STATUS_ENCRYPTED ? "" : "not ");
 }
 
+#ifndef CONFIG_SPL_BUILD
 static bool is_boot_authenticated(void)
 {
 	u32 status = 0;
@@ -423,7 +424,6 @@ static bool is_boot_authenticated(void)
 	return (status & BIT(0));
 }
 
-#ifndef CONFIG_SPL_BUILD
 static int do_multi_boot(struct cmd_tbl *cmdtp, int flag,
 			 int argc, char * const argv[])
 {
