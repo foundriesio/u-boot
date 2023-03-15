@@ -607,6 +607,13 @@ config DISPLAY_BOARDINFO
 	  when U-Boot starts up. The board function checkboard() is called
 	  to do this.
 
+config BOOTFIRMWARE_INFO
+	bool "Display information about the boot firmware"
+	depends on OF_CONTROL
+	default n
+	help
+	  Display information about the boot firmware (version etc).
+
 config DISPLAY_BOARDINFO_LATE
 	bool "Display information about the board during late start up"
 	help
