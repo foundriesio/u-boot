@@ -781,6 +781,9 @@ static init_fnc_t init_sequence_r[] = {
 	console_announce_r,
 	show_board_info,
 #endif
+#ifdef CONFIG_BOOTFIRMWARE_INFO
+	get_boot_firmware_info,
+#endif
 #ifdef CONFIG_ARCH_MISC_INIT
 	arch_misc_init,		/* miscellaneous arch-dependent init */
 #endif

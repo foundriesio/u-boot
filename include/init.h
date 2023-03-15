@@ -299,6 +299,9 @@ int show_board_info(void);
 void get_reboot_reason(char *ret);
 #endif
 
+/* common/bootfirmware_info.c */
+int get_boot_firmware_info(void);
+
 /**
  * Get the uppermost pointer that is valid to access
  *
