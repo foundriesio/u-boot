@@ -305,6 +305,9 @@ int checkboard(void);
  */
 int show_board_info(void);
 
+/* common/bootfirmware_info.c */
+int get_boot_firmware_info(void);
+
 /**
  * board_get_usable_ram_top() - get uppermost address for U-Boot relocation
  *
