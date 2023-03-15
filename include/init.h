@@ -295,6 +295,9 @@ int init_func_vid(void);
 int checkboard(void);
 int show_board_info(void);
 
+/* common/bootfirmware_info.c */
+int get_boot_firmware_info(void);
+
 /**
  * Get the uppermost pointer that is valid to access
  *
