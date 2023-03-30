@@ -614,6 +614,14 @@ config BOOTFIRMWARE_INFO
 	help
 	  Display information about the boot firmware (version etc).
 
+config BOOTFIRMWARE_INFO_STRICT
+	bool "Enforce boot firmware display"
+	depends on BOOTFIRMWARE_INFO
+	default n
+	help
+	  If the info can not be accessed (e.g. no correct node in DTB),
+	  boot is aborted.
+
 config DISPLAY_BOARDINFO_LATE
 	bool "Display information about the board during late start up"
 	help
