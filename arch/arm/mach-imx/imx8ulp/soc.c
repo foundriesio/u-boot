@@ -1183,3 +1183,62 @@ enum env_location env_get_location(enum env_operation op, int prio)
 		return ENVL_NOWHERE;
 	}
 }
+
+void boot_mode_enable_secondary(bool enable)
+{
+	/* SIM0-SEC DGO_GP6 */
+	if (enable)
+		setbits_le32(SIM_SEC_BASE_ADDR + 0x28, (0x1 << 8));
+	else
+		clrbits_le32(SIM_SEC_BASE_ADDR + 0x28, (0x1 << 8));
+
+	/* set update bit */
+	setbits_le32(SIM_SEC_BASE_ADDR + 0x8, 0x1 << 6);
+
+	/* polling the ack */
+	while ((readl(SIM_SEC_BASE_ADDR + 0x8) & (0x1 << 14)) == 0)
+		;
+
+	/* clear the update */
+	clrbits_le32(SIM_SEC_BASE_ADDR + 0x8, (0x1 << 6));
+
+	/* clear the ack by set 1 */
+	setbits_le32(SIM_SEC_BASE_ADDR + 0x8, (0x1 << 14));
+}
+
+int boot_mode_is_closed(void)
+{
+	u32 lc;
+
+	/* LMDA lifecycle */
+	lc = readl(FSB_BASE_ADDR + 0x41c);
+	lc &= 0x3ff;
+
+	/* OEM closed */
+	if (lc == 0x20)
+		return 1;
+
+	/* Ignore all other modes, assume open */
+
+	return 0;
+}
+
+int boot_mode_getprisec(void)
+{
+	volatile gd_t *pgd = gd;
+	u32 bstage = 0;
+	int ret;
+
+	ret = g_rom_api->query_boot_infor(QUERY_BT_STAGE, &bstage,
+					  ((uintptr_t)&bstage) ^ QUERY_BT_STAGE);
+	set_gd(pgd);
+
+	if (ret != ROM_API_OKAY)
+		printf("ROMAPI: failure at query_boot_info for BT_STAGE\n");
+
+	/* Only handle secondary, return 'primary' for everything else */
+	if (bstage == BT_STAGE_SECONDARY)
+		return 1;
+
+	return 0;
+}
