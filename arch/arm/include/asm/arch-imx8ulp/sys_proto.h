@@ -8,6 +8,13 @@
 
 #include <asm/mach-imx/sys_proto.h>
 
+/* Keep FIO prototypes atop to avoid merging conficts with upstream
+ * changes.
+ */
+int boot_mode_getprisec(void);
+int boot_mode_is_closed(void);
+void boot_mode_enable_secondary(bool enable);
+
 enum bt_mode get_boot_mode(void);
 int xrdc_config_pdac(u32 bridge, u32 index, u32 dom, u32 perm);
 int xrdc_config_pdac_openacc(u32 bridge, u32 index);
