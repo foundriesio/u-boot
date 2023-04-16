@@ -571,7 +571,7 @@ unsigned long spl_mmc_get_uboot_raw_sector(struct mmc *mmc,
 	return offset;
 }
 
-#if defined(CONFIG_IMX8QM) || defined(CONFIG_IMX8QXP)
+#if defined(CONFIG_IMX8QM) || defined(CONFIG_IMX8QXP) || defined(CONFIG_IMX8ULP)
 int spl_mmc_emmc_boot_partition(struct mmc *mmc)
 {
 	return boot_mode_getprisec() ? 2 : 1;
