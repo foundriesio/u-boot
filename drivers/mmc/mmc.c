@@ -1957,7 +1957,11 @@ static const struct mode_width_tuning mmc_modes_by_pref[] = {
 #if CONFIG_IS_ENABLED(MMC_HS200_SUPPORT)
 	{
 		.mode = MMC_HS_200,
+#if defined(CONFIG_SPL_BUILD) && defined(CONFIG_IMX93_EVK_LPDDR4X)
+		.widths = MMC_MODE_4BIT,
+#else
 		.widths = MMC_MODE_8BIT | MMC_MODE_4BIT,
+#endif
 		.tuning = MMC_CMD_SEND_TUNING_BLOCK_HS200
 	},
 #endif
