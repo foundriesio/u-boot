@@ -21,8 +21,12 @@
 DECLARE_GLOBAL_DATA_PTR;
 
 #define IMEM_LEN 32768 /* byte */
+#if IS_ENABLED(CONFIG_IMX8M)
+#define DMEM_LEN 4096 /* byte */
+#else
 #define DMEM_LEN 16384 /* byte */
-#define IMEM_2D_OFFSET	49152
+#endif
+#define IMEM_2D_OFFSET (IMEM_LEN + DMEM_LEN)
 
 #define IMEM_OFFSET_ADDR 0x00050000
 #define DMEM_OFFSET_ADDR 0x00054000
