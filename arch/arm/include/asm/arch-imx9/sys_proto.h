@@ -17,4 +17,7 @@ int mix_power_init(enum mix_power_domain pd);
 void soc_power_init(void);
 bool m33_is_rom_kicked(void);
 int m33_prepare(void);
+int boot_mode_getprisec(void);
+int boot_mode_is_closed(void);
+void boot_mode_enable_secondary(bool enable);
 #endif
