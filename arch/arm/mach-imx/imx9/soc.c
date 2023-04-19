@@ -1276,3 +1276,46 @@ enum imx9_soc_voltage_mode soc_target_voltage_mode(void)
 
 	return voltage;
 }
+
+void boot_mode_enable_secondary(bool enable)
+{
+	/* TODO: SMC SRC GPR20 (missing docs) */
+}
+
+int boot_mode_is_closed(void)
+{
+	u32 lc;
+
+	/* LMDA lifecycle */
+	lc = readl(FSB_BASE_ADDR + 0x41c);
+
+	lc &= 0x3ff;
+
+	/* OEM closed */
+	if (lc == 0x20)
+		return 1;
+
+	/* Ignore all other modes, assume open */
+
+	return 0;
+}
+
+int boot_mode_getprisec(void)
+{
+	volatile gd_t *pgd = gd;
+	u32 bstage = 0;
+	int ret;
+
+	ret = g_rom_api->query_boot_infor(QUERY_BT_STAGE, &bstage,
+					  ((uintptr_t)&bstage) ^ QUERY_BT_STAGE);
+	set_gd(pgd);
+
+	if (ret != ROM_API_OKAY)
+		printf("ROMAPI: failure at query_boot_info for BT_STAGE\n");
+
+	/* Only handle secondary, return 'primary' for everything else */
+	if (bstage == BT_STAGE_SECONDARY)
+		return 1;
+
+	return 0;
+}
