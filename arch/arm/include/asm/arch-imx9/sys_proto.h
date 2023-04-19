@@ -22,4 +22,7 @@ enum imx9_soc_voltage_mode soc_target_voltage_mode(void);
 
 #define is_voltage_mode(mode) (soc_target_voltage_mode() == mode)
 
+int boot_mode_getprisec(void);
+int boot_mode_is_closed(void);
+void boot_mode_enable_secondary(bool enable);
 #endif
