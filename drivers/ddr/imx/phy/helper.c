@@ -17,7 +17,7 @@
 DECLARE_GLOBAL_DATA_PTR;
 
 #define IMEM_LEN 32768 /* byte */
-#if CONFIG_IS_ENABLED(IMX8M)
+#if IS_ENABLED(CONFIG_IMX8M)
 #define DMEM_LEN 4096 /* byte */
 #else
 #define DMEM_LEN 16384 /* byte */
