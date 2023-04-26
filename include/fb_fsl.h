@@ -157,10 +157,14 @@
  * the manixum size of bootloader is half of boot partition size
  * excluding MMC bootloader offset
 */
+#ifdef CONFIG_IMX8QM
+#define ANDROID_BOOTLOADER_SIZE    0x400000
+#else
 #define ANDROID_BOOTLOADER_SIZE    0x200000
+#endif /* CONFIG_IMX8QM */
 #else
 #define ANDROID_BOOTLOADER_SIZE    0x400000
-#endif
+#endif /* CONFIG_FSL_FASTBOOT_BOOTLOADER_SECONDARY */
 
 #define ANDROID_GPT_OFFSET         0
 #define ANDROID_GPT_SIZE           0x100000
