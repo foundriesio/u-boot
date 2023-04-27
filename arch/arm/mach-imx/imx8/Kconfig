@@ -20,7 +20,7 @@ config IMX_LOAD_HDMI_FIMRWARE_TX
 
 config IMX8
 	bool
-	select HAS_CAAM if !OPTEE
+	select HAS_CAAM
 
 config MU_BASE_SPL
 	hex "MU base address used in SPL"
