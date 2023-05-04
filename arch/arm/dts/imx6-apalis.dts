@@ -12,9 +12,10 @@
 	compatible = "toradex,apalis_imx6q", "fsl,imx6q";
 
 	aliases {
-		mmc0 = &usdhc3;
-		mmc1 = &usdhc1;
-		mmc2 = &usdhc2;
+		mmc0 = &usdhc1;
+		mmc1 = &usdhc2;
+		mmc2 = &usdhc3;
+		mmc3 = &usdhc4;
 		usb0 = &usbotg; /* required for ums */
 		ethernet0 = &fec;
 	};

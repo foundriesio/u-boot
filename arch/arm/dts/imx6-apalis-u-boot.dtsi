@@ -8,7 +8,7 @@
 / {
 
 	aliases {
-		mmc0 = &usdhc3;
+		mmc2 = &usdhc3;
 	};
 
 	reg_module_3v3: regulator-module-3v3 {
