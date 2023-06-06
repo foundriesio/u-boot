@@ -141,20 +141,15 @@
 
 #define ANDROID_MBR_OFFSET	    0
 #define ANDROID_MBR_SIZE	    0x200
-#ifdef CONFIG_FSL_FASTBOOT_BOOTLOADER_SECONDARY
 /*
- * If we support secondary boot and use boot partition
- * the manixum size of bootloader is half of boot partition size
- * excluding MMC bootloader offset
+ * If we support secondary boot and use boot partition, we need to double
+ * boot partition size to have enough space for the second bootloader
+ * images. U-Boot for MFGTool doesn't know about a type of flashing image,
+ * so it shouldn't reduce space for each bootloader images set
+ * (primary/secondary) in order to avoid flashing errors like:
+ * ... 6/ 9 [image too large for partition] FB: flash bootloader2 u-boot.itb
 */
-#ifdef CONFIG_IMX8QM
 #define ANDROID_BOOTLOADER_SIZE    0x400000
-#else
-#define ANDROID_BOOTLOADER_SIZE    0x200000
-#endif /* CONFIG_IMX8QM */
-#else
-#define ANDROID_BOOTLOADER_SIZE    0x400000
-#endif /* CONFIG_FSL_FASTBOOT_BOOTLOADER_SECONDARY */
 
 #define ANDROID_GPT_OFFSET         0
 #define ANDROID_GPT_SIZE           0x100000
