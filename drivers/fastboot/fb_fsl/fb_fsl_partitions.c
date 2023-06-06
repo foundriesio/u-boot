@@ -61,6 +61,21 @@ enum {
 struct fastboot_ptentry g_ptable[MAX_PTN];
 unsigned int g_pcount;
 
+
+#if defined(DEBUG)
+void print_part(struct fastboot_ptentry *ptable_entry, unsigned int block_size)
+{
+	printf("Register partition (blksz: %u) %s: [%u, %lu], pid: %u, pidx: %u, fs: %s, flags: %u\n",
+	      block_size, ptable_entry->name,
+	      ptable_entry->start, ptable_entry->length,
+	      ptable_entry->partition_id,
+	      ptable_entry->partition_index, ptable_entry->fstype,
+	      ptable_entry->flags);
+}
+#else
+#define print_part(a, b) {}
+#endif
+
 #ifdef CONFIG_FSL_FASTBOOT_BOOTLOADER_SECONDARY
 static ulong secondary_image_table_mmc_offset(void)
 {
@@ -151,6 +166,9 @@ static int _fastboot_parts_add_ptable_entry(int ptable_index,
 		strcpy(ptable[ptable_index].fstype, "f2fs");
 	else
 		strcpy(ptable[ptable_index].fstype, "raw");
+
+	print_part(&ptable[ptable_index], dev_desc->blksz);
+
 	return 0;
 }
 
@@ -169,6 +187,8 @@ static int _fastboot_parts_load_from_ptable(void)
 	struct mmc *mmc;
 	struct blk_desc *dev_desc;
 	struct fastboot_ptentry ptable[MAX_PTN];
+
+	debug("boot_loader_psize = %lu\n", boot_loader_psize);
 
 	/* sata case in env */
 	if (fastboot_devinfo.type == DEV_SATA) {
@@ -209,6 +229,8 @@ static int _fastboot_parts_load_from_ptable(void)
 			boot_partition = FASTBOOT_MMC_BOOT_PARTITION_ID;
 			user_partition = FASTBOOT_MMC_USER_PARTITION_ID;
 			boot_loader_psize = mmc->capacity_boot;
+			debug("boot_loader_psize is reconfigured to %lu\n",
+			      boot_loader_psize);
 		}
 	} else {
 		printf("Can't setup partition table on this device %d\n",
@@ -225,6 +247,7 @@ static int _fastboot_parts_load_from_ptable(void)
 	ptable[PTN_GPT_INDEX].partition_id = user_partition;
 	ptable[PTN_GPT_INDEX].flags = FASTBOOT_PTENTRY_FLAGS_UNERASEABLE;
 	strcpy(ptable[PTN_GPT_INDEX].fstype, "raw");
+	print_part(&ptable[PTN_GPT_INDEX], dev_desc->blksz);
 
 #ifndef CONFIG_ARM64
 	/* Trusty OS */
@@ -233,6 +256,7 @@ static int _fastboot_parts_load_from_ptable(void)
 	ptable[PTN_TEE_INDEX].length = TRUSTY_OS_MMC_BLKS;
 	ptable[PTN_TEE_INDEX].partition_id = TEE_HWPARTITION_ID;
 	strcpy(ptable[PTN_TEE_INDEX].fstype, "raw");
+	print_part(&ptable[PTN_TEE_INDEX], dev_desc->blksz);
 #endif
 
 	/* Add mcu_os partition if we support mcu firmware image flash */
@@ -243,6 +267,7 @@ static int _fastboot_parts_load_from_ptable(void)
 	ptable[PTN_MCU_OS_INDEX].flags = FASTBOOT_PTENTRY_FLAGS_UNERASEABLE;
 	ptable[PTN_MCU_OS_INDEX].partition_id = user_partition;
 	strcpy(ptable[PTN_MCU_OS_INDEX].fstype, "raw");
+	print_part(&ptable[PTN_MCU_OS_INDEX], dev_desc->blksz);
 #endif
 
 	strcpy(ptable[PTN_ALL_INDEX].name, FASTBOOT_PARTITION_ALL);
@@ -250,6 +275,7 @@ static int _fastboot_parts_load_from_ptable(void)
 	ptable[PTN_ALL_INDEX].length = dev_desc->lba;
 	ptable[PTN_ALL_INDEX].partition_id = user_partition;
 	strcpy(ptable[PTN_ALL_INDEX].fstype, "device");
+	print_part(&ptable[PTN_ALL_INDEX], dev_desc->blksz);
 
 	/* Bootloader */
 	strcpy(ptable[PTN_BOOTLOADER_INDEX].name, FASTBOOT_PARTITION_BOOTLOADER);
@@ -266,6 +292,7 @@ static int _fastboot_parts_load_from_ptable(void)
 	ptable[PTN_BOOTLOADER_INDEX].partition_id = boot_partition;
 	ptable[PTN_BOOTLOADER_INDEX].flags = FASTBOOT_PTENTRY_FLAGS_UNERASEABLE;
 	strcpy(ptable[PTN_BOOTLOADER_INDEX].fstype, "raw");
+	print_part(&ptable[PTN_BOOTLOADER_INDEX], dev_desc->blksz);
 
 #ifdef CONFIG_FSL_FASTBOOT_BOOTLOADER2
 	/* Bootloader2 (u-boot binary when SPL is separate) */
@@ -279,6 +306,7 @@ static int _fastboot_parts_load_from_ptable(void)
 	ptable[PTN_BOOTLOADER2_INDEX].flags = FASTBOOT_PTENTRY_FLAGS_UNERASEABLE;
 	strcpy(ptable[PTN_BOOTLOADER2_INDEX].fstype, "raw");
 	last_bootloader_partition = PTN_BOOTLOADER2_INDEX;
+	print_part(&ptable[PTN_BOOTLOADER2_INDEX], dev_desc->blksz);
 #endif
 
 #ifdef CONFIG_FSL_FASTBOOT_BOOTLOADER_SECONDARY
@@ -303,6 +331,7 @@ static int _fastboot_parts_load_from_ptable(void)
 	}
 	ptable[PTN_BOOTLOADER_SECONDARY_INDEX].flags = FASTBOOT_PTENTRY_FLAGS_UNERASEABLE;
 	strcpy(ptable[PTN_BOOTLOADER_SECONDARY_INDEX].fstype, "raw");
+	print_part(&ptable[PTN_BOOTLOADER_SECONDARY_INDEX], dev_desc->blksz);
 
 	/* Secondary Image Table */
 	strcpy(ptable[PTN_SIT_INDEX].name, FASTBOOT_PARTITION_SIT);
@@ -314,6 +343,7 @@ static int _fastboot_parts_load_from_ptable(void)
 	ptable[PTN_SIT_INDEX].flags = FASTBOOT_PTENTRY_FLAGS_UNERASEABLE;
 	strcpy(ptable[PTN_SIT_INDEX].fstype, "raw");
 	last_bootloader_partition = PTN_SIT_INDEX;
+	print_part(&ptable[PTN_SIT_INDEX], dev_desc->blksz);
 
 #ifdef CONFIG_FSL_FASTBOOT_BOOTLOADER2
 	/* Bootloader2 (u-boot binary when SPL is separate) */
@@ -334,6 +364,7 @@ static int _fastboot_parts_load_from_ptable(void)
 	}
 	ptable[PTN_BOOTLOADER2_SECONDARY_INDEX].flags = FASTBOOT_PTENTRY_FLAGS_UNERASEABLE;
 	strcpy(ptable[PTN_BOOTLOADER2_SECONDARY_INDEX].fstype, "raw");
+	print_part(&ptable[PTN_BOOTLOADER2_SECONDARY_INDEX], dev_desc->blksz);
 	last_bootloader_partition = PTN_BOOTLOADER2_SECONDARY_INDEX;
 
 #endif
