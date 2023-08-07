@@ -583,6 +583,38 @@ void fit_image_print(const void *fit, int image_noffset, const char *p)
 }
 
 /**
+ * fit_conf_node_verify - verify config entry integrity
+ * @fit: pointer to the FIT format image header
+ *
+ * fit_conf_node_verify() gets a config image hash,
+ * re-calculates a config hash and compares with the value stored in hash
+ * node.
+ *
+ * returns:
+ *     0, if a hash is valid
+ *     -1, if a hash is invalid
+ *     -2, if a config node is not found
+ */
+int fit_conf_node_verify(const void *fit)
+{
+	/* validate required fit config entry */
+	int noffset = fit_conf_get_node(fit, NULL);
+	if (noffset < 0) {
+		if (CONFIG_IS_ENABLED(FIT_SIGNATURE_STRICT)) {
+			debug("FIT_SIGNATURE_STRICT requires a config node\n");
+			return -2;
+		} else {
+			return 0;
+		}
+	}
+
+	if (!fit_config_verify(fit, noffset))
+		return 0;
+
+	return -1;
+}
+
+/**
  * fit_get_desc - get node description property
  * @fit: pointer to the FIT format image header
  * @noffset: node offset
