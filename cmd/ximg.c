@@ -141,6 +141,11 @@ do_imgextract(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
 			return 1;
 		}
 
+		if (fit_conf_node_verify(fit_hdr)) {
+			puts("Cannot verify FIT config node\n");
+			return 1;
+		}
+
 		/* get subimage node offset */
 		noffset = fit_image_get_node(fit_hdr, uname);
 		if (noffset < 0) {
