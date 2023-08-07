@@ -1018,6 +1018,11 @@ int image_locate_script(void *buf, int size, const char *fit_uname,
 				return 1;
 			}
 
+			if (fit_conf_node_verify(fit_hdr)) {
+				puts("Cannot verify FIT config node\n");
+				return 1;
+			}
+
 			if (!fit_uname) {
 				/* If confname is empty, use the default */
 				if (confname && *confname)
