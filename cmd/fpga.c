@@ -335,6 +335,11 @@ static int do_fpga_loadmk(struct cmd_tbl *cmdtp, int flag, int argc,
 			return CMD_RET_FAILURE;
 		}
 
+		if (fit_conf_node_verify(fit_hdr)) {
+			puts("Cannot verify FIT config node\n");
+			return CMD_RET_FAILURE;
+		}
+
 		err = fit_get_data_node(fit_hdr, fit_uname, &fit_data,
 					&data_size);
 		if (err) {
