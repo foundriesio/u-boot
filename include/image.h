@@ -1126,6 +1126,8 @@ int fit_get_subimage_count(const void *fit, int images_noffset);
 void fit_print_contents(const void *fit);
 void fit_image_print(const void *fit, int noffset, const char *p);
 
+int fit_conf_node_verify(const void *fit);
+
 /**
  * fit_get_end - get FIT image size
  * @fit: pointer to the FIT format image header
