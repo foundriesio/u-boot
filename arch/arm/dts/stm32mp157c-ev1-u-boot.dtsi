@@ -4,3 +4,16 @@
  */
 
 #include "stm32mp157a-ev1-u-boot.dtsi"
+
+#ifdef CONFIG_OPTEE
+/ {
+	firmware {
+		optee {
+			compatible = "linaro,optee-tz";
+			method = "smc";
+			rpmb-dev = <&sdmmc2>;
+			u-boot,dm-pre-reloc;
+		};
+	};
+};
+#endif
