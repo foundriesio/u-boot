@@ -160,6 +160,22 @@
 	u-boot,dm-spl;
 };
 
+&pinctrl_i2c2 {
+	u-boot,dm-spl;
+};
+
+&pinctrl_i2c2_gpio {
+	u-boot,dm-spl;
+};
+
+&pinctrl_i2c3 {
+	u-boot,dm-spl;
+};
+
+&pinctrl_i2c3_gpio {
+	u-boot,dm-spl;
+};
+
 &pinctrl_i2c5 {
 	u-boot,dm-spl;
 };
