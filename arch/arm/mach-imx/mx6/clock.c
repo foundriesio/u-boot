@@ -6,6 +6,7 @@
 
 #include <common.h>
 #include <command.h>
+#include <asm/div64.h>
 #include <div64.h>
 #include <log.h>
 #include <asm/io.h>
