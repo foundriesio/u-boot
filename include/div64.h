@@ -198,6 +198,7 @@ static inline u64 __arch_xprod_64(const u64 m, u64 n, bool bias)
 extern u32 __div64_32(u64 *dividend, u32 divisor);
 #endif
 
+#ifndef do_div
 /* The unnecessary pointer compare is there
  * to check for type safety (n must be 64bit)
  */
@@ -224,6 +225,7 @@ extern u32 __div64_32(u64 *dividend, u32 divisor);
 		__rem = __div64_32(&(n), __base);	\
 	__rem;						\
  })
+#endif /* do_div */
 
 #else /* BITS_PER_LONG == ?? */
 
