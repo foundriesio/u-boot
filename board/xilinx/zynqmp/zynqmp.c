@@ -1080,14 +1080,10 @@ unsigned int spl_spi_get_uboot_offs(struct spi_flash *flash)
 	 * Secondary boot.bin offset - 0x50000 (multiboot == 10,
 	 *                             as 10 * 32KB == 0x50000)
 	 */
-	if (boot_image_offset == CONFIG_SYS_SPI_BOOT_IMAGE_OFFS) {
-		payload_offset = CONFIG_SYS_SPI_U_BOOT_OFFS;
-	} else if (boot_image_offset == CONFIG_SYS_SPI_BOOT_IMAGE_OFFS2) {
+	if (boot_image_offset == CONFIG_SYS_SPI_BOOT_IMAGE_OFFS2) {
 		payload_offset = CONFIG_SYS_SPI_U_BOOT_OFFS2;
 	} else {
-		printf("Invalid value of multiboot register, value = %d\n",
-		       multiboot);
-		hang();
+		payload_offset = CONFIG_SYS_SPI_U_BOOT_OFFS;
 	}
 
 	printf("SPL: Booting next image from 0x%x SPI offset\n",
