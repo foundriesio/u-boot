@@ -28,6 +28,8 @@ struct legacy_img_hdr;
 #define MMCSD_MODE_FS		2
 #define MMCSD_MODE_EMMCBOOT	3
 
+#define SPL_PAYLOAD_NAME_MAX	128
+
 struct blk_desc;
 struct legacy_img_hdr;
 struct spl_boot_device;

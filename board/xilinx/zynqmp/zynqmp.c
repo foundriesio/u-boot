@@ -45,6 +45,14 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+/*
+ * Golden image boundary:
+ * Boot images can be located every 32 KB in the boot memory device,
+ * which allows for more than one boot image to be in the memory
+ * device.
+ */
+const u32 golden_image_boundary = 0x8000;
+
 #if CONFIG_IS_ENABLED(FPGA) && defined(CONFIG_FPGA_ZYNQMPPL)
 static xilinx_desc zynqmppl = {
 	xilinx_zynqmp, csu_dma, 1, &zynqmp_op, 0, &zynqmp_op, NULL,
@@ -99,7 +107,7 @@ int board_early_init_f(void)
 # endif
 #endif
 
-static int multi_boot(void)
+static u32 multi_boot_get(void)
 {
 	u32 multiboot = 0;
 	int ret;
@@ -109,6 +117,13 @@ static int multi_boot(void)
 		return -EINVAL;
 
 	return multiboot;
+}
+
+static u32 multi_boot_set(u32 multiboot)
+{
+	zynqmp_mmio_write((u32)&csu_base->multi_boot, 0xFFFFFFFF, multiboot);
+
+	return 0;
 }
 
 #if defined(CONFIG_SPL_BUILD)
@@ -138,8 +153,120 @@ static void print_secure_boot(void)
 	       status & ZYNQMP_CSU_STATUS_ENCRYPTED ? "" : "not ");
 }
 
+static bool is_boot_authenticated(void)
+{
+	u32 status = 0;
+	int ret;
+
+	ret = zynqmp_mmio_read((ulong)&csu_base->status, &status);
+	if (ret) {
+		printf("Can't obtain boot auth state");
+		return false;
+	}
+
+	return (status & BIT(0));
+}
+
+#ifndef CONFIG_SPL_BUILD
+static int do_multi_boot(struct cmd_tbl *cmdtp, int flag,
+			 int argc, char * const argv[])
+{
+	int ret;
+	u32 multiboot;
+
+	/* If we just want to retrieve current value */
+	if (argc == 1) {
+		multiboot = multi_boot_get();
+
+		printf("Multiboot register: \t0x%x (dec: %d)\n", multiboot,
+		       multiboot);
+		if (!strcmp(env_get("modeboot"), "qspiboot"))
+			printf("QSPI boot offset: \t0x%x\n", multiboot *
+			       golden_image_boundary);
+
+		if (multiboot > 1)
+			ret = env_set("fiovb.is_secondary_boot", "1");
+		else
+			ret = env_set("fiovb.is_secondary_boot", "0");
+
+		if (ret)
+			return CMD_RET_FAILURE;
+
+		return CMD_RET_SUCCESS;
+	}
+
+	if (strict_strtoul(argv[1], 0, &multiboot) < 0) {
+		printf("Incorrect value of multiboot offset\n");
+		return CMD_RET_USAGE;
+	}
+#if defined(CONFIG_SPL_SPI)
+	if (!strcmp(env_get("modeboot"), "qspiboot")) {
+		u32 boot_image_offset = golden_image_boundary * multiboot;
+
+		if (boot_image_offset != CONFIG_SYS_SPI_BOOT_IMAGE_OFFS &&
+		    boot_image_offset != CONFIG_SYS_SPI_BOOT_IMAGE_OFFS2 &&
+		    boot_image_offset != 0) {
+			printf("Invalid value of multiboot register, "
+			       "supported values are: 0x0, 0x%x, 0x%x\n",
+			       (CONFIG_SYS_SPI_BOOT_IMAGE_OFFS /
+				golden_image_boundary),
+			       (CONFIG_SYS_SPI_BOOT_IMAGE_OFFS2 /
+				golden_image_boundary));
+			return CMD_RET_FAILURE;
+		}
+	}
+#endif
+
+	printf("Set multiboot register to: \t0x%x (dec: %d)\n", multiboot,
+	       multiboot);
+	if (!strcmp(env_get("modeboot"), "qspiboot"))
+		printf("QSPI boot offset to be used after reboot: \t0x%x\n",
+		       multiboot * golden_image_boundary);
+
+	multi_boot_set(multiboot);
+
+	return CMD_RET_SUCCESS;
+}
+
+U_BOOT_CMD(
+	multi_boot, CONFIG_SYS_MAXARGS, 1, do_multi_boot,
+	"Get/Set CSU multiboot register",
+	"\n"
+	"   no param  - get current register/offset value\n"
+	"   value - set multi_boot register\n"
+);
+
+static int do_is_boot_authenticated(struct cmd_tbl *cmdtp, int flag,
+				    int argc, char * const argv[])
+{
+	int ret;
+
+	if (is_boot_authenticated()) {
+		printf("Board is in closed state\n");
+
+		ret = env_set("board_is_closed", "1");
+		if (ret)
+			return CMD_RET_FAILURE;
+	} else {
+		printf("Board is in open state\n");
+	}
+
+	return CMD_RET_SUCCESS;
+}
+
+U_BOOT_CMD(
+	is_boot_authenticated, CONFIG_SYS_MAXARGS, 1,
+	do_is_boot_authenticated,
+	"Check if the board is authenticated", ""
+);
+#endif /* CONFIG_SPL_BUILD */
+
+#define PS_SYSMON_ANALOG_BUS_VAL	0x3210
+#define PS_SYSMON_ANALOG_BUS_REG	0xFFA50914
+
 int board_init(void)
 {
+	u32 multiboot;
 #if CONFIG_IS_ENABLED(FPGA) && defined(CONFIG_FPGA_ZYNQMPPL)
 	struct udevice *soc;
 	char name[SOC_MAX_STR_SIZE];
@@ -188,8 +315,11 @@ int board_init(void)
 
 	/* display secure boot information */
 	print_secure_boot();
-	if (current_el() == 3)
-		printf("Multiboot:\t%d\n", multi_boot());
+	if (current_el() == 3) {
+		multiboot = multi_boot_get();
+
+		printf("Multiboot:\t%d\n", multiboot);
+	}
 
 	return 0;
 }
@@ -391,7 +521,7 @@ int board_late_init(void)
 	int bootseq = -1;
 	int bootseq_len = 0;
 	int env_targets_len = 0;
-	const char *mode;
+	const char *mode = NULL;
 	char *new_targets;
 	char *env_targets;
 	int ret, multiboot;
@@ -400,19 +530,8 @@ int board_late_init(void)
 	usb_ether_init();
 #endif
 
-	if (!(gd->flags & GD_FLG_ENV_DEFAULT)) {
-		debug("Saved variables - Skipping\n");
-		return 0;
-	}
+	multiboot = multi_boot_get();
 
-	if (!CONFIG_IS_ENABLED(ENV_VARS_UBOOT_RUNTIME_CONFIG))
-		return 0;
-
-	ret = set_fdtfile();
-	if (ret)
-		return ret;
-
-	multiboot = multi_boot();
 	if (multiboot >= 0)
 		env_set_hex("multiboot", multiboot);
 
@@ -442,8 +561,8 @@ int board_late_init(void)
 					      "mmc@ff160000", &dev) &&
 		    uclass_get_device_by_name(UCLASS_MMC,
 					      "sdhci@ff160000", &dev)) {
-			puts("Boot from EMMC but without SD0 enabled!\n");
-			return -1;
+			debug("SD0 driver for SD0 device is not present\n");
+			break;
 		}
 		debug("mmc0 device found at %p, seq %d\n", dev, dev_seq(dev));
 
@@ -457,8 +576,8 @@ int board_late_init(void)
 					      "mmc@ff160000", &dev) &&
 		    uclass_get_device_by_name(UCLASS_MMC,
 					      "sdhci@ff160000", &dev)) {
-			puts("Boot from SD0 but without SD0 enabled!\n");
-			return -1;
+			debug("SD0 driver for SD0 device is not present\n");
+			break;
 		}
 		debug("mmc0 device found at %p, seq %d\n", dev, dev_seq(dev));
 
@@ -475,8 +594,8 @@ int board_late_init(void)
 					      "mmc@ff170000", &dev) &&
 		    uclass_get_device_by_name(UCLASS_MMC,
 					      "sdhci@ff170000", &dev)) {
-			puts("Boot from SD1 but without SD1 enabled!\n");
-			return -1;
+			debug("SD1 driver for SD1 device is not present\n");
+			break;
 		}
 		debug("mmc1 device found at %p, seq %d\n", dev, dev_seq(dev));
 
@@ -490,39 +609,52 @@ int board_late_init(void)
 		env_set("modeboot", "nandboot");
 		break;
 	default:
-		mode = "";
 		printf("Invalid Boot Mode:0x%x\n", bootmode);
 		break;
 	}
 
-	if (bootseq >= 0) {
-		bootseq_len = snprintf(NULL, 0, "%i", bootseq);
-		debug("Bootseq len: %x\n", bootseq_len);
-		env_set_hex("bootseq", bootseq);
+	if (mode) {
+		if (bootseq >= 0) {
+			bootseq_len = snprintf(NULL, 0, "%i", bootseq);
+			debug("Bootseq len: %x\n", bootseq_len);
+			env_set_hex("bootseq", bootseq);
+		}
+
+		if (!(gd->flags & GD_FLG_ENV_DEFAULT)) {
+			debug("Saved variables - Skipping\n");
+			return 0;
+		}
+
+		if (!CONFIG_IS_ENABLED(ENV_VARS_UBOOT_RUNTIME_CONFIG))
+			return 0;
+
+		ret = set_fdtfile();
+		if (ret)
+			return ret;
+
+		/*
+		 * One terminating char + one byte for space between mode
+		 * and default boot_targets
+		 */
+		env_targets = env_get("boot_targets");
+		if (env_targets)
+			env_targets_len = strlen(env_targets);
+
+		new_targets = calloc(1, strlen(mode) + env_targets_len + 2 +
+				     bootseq_len);
+		if (!new_targets)
+			return -ENOMEM;
+
+		if (bootseq >= 0)
+			sprintf(new_targets, "%s%x %s", mode, bootseq,
+				env_targets ? env_targets : "");
+		else
+			sprintf(new_targets, "%s %s", mode,
+				env_targets ? env_targets : "");
+
+		env_set("boot_targets", new_targets);
+		free(new_targets);
 	}
-
-	/*
-	 * One terminating char + one byte for space between mode
-	 * and default boot_targets
-	 */
-	env_targets = env_get("boot_targets");
-	if (env_targets)
-		env_targets_len = strlen(env_targets);
-
-	new_targets = calloc(1, strlen(mode) + env_targets_len + 2 +
-			     bootseq_len);
-	if (!new_targets)
-		return -ENOMEM;
-
-	if (bootseq >= 0)
-		sprintf(new_targets, "%s%x %s", mode, bootseq,
-			env_targets ? env_targets : "");
-	else
-		sprintf(new_targets, "%s %s", mode,
-			env_targets ? env_targets : "");
-
-	env_set("boot_targets", new_targets);
-	free(new_targets);
 
 	reset_reason();
 
@@ -598,6 +730,10 @@ enum env_location env_get_location(enum env_operation op, int prio)
 	case QSPI_MODE_32BIT:
 		if (IS_ENABLED(CONFIG_ENV_IS_IN_SPI_FLASH))
 			return ENVL_SPI_FLASH;
+		if (IS_ENABLED(CONFIG_ENV_IS_IN_FAT))
+			return ENVL_FAT;
+		if (IS_ENABLED(CONFIG_ENV_IS_IN_EXT4))
+			return ENVL_EXT4;
 		return ENVL_NOWHERE;
 	case JTAG_MODE:
 	default:
@@ -620,7 +756,7 @@ void set_dfu_alt_info(char *interface, char *devstr)
 
 	memset(buf, 0, sizeof(buf));
 
-	multiboot = multi_boot();
+	multiboot = multi_boot_get();
 	if (multiboot < 0)
 		multiboot = 0;
 
@@ -666,5 +802,67 @@ void set_dfu_alt_info(char *interface, char *devstr)
 
 	env_set("dfu_alt_info", buf);
 	puts("DFU alt info setting: done\n");
+}
+#endif
+
+#if defined(CONFIG_SPL_SPI)
+unsigned int spl_spi_get_uboot_offs(struct spi_flash *flash)
+{
+	int ret;
+	u32 multiboot;
+	u32 payload_offset = 0;
+	u32 boot_image_offset = 0x0;
+
+	multiboot = multi_boot_get();
+	boot_image_offset = golden_image_boundary * multiboot;
+
+	/*
+	 * Default values are:
+	 * Primary boot.bin offset   - 0x0 (multiboot == 0)
+	 * Secondary boot.bin offset - 0x50000 (multiboot == 10,
+	 *                             as 10 * 32KB == 0x50000)
+	 */
+	if (boot_image_offset == CONFIG_SYS_SPI_BOOT_IMAGE_OFFS) {
+		payload_offset = CONFIG_SYS_SPI_U_BOOT_OFFS;
+	} else if (boot_image_offset == CONFIG_SYS_SPI_BOOT_IMAGE_OFFS2) {
+		payload_offset = CONFIG_SYS_SPI_U_BOOT_OFFS2;
+	} else {
+		printf("Invalid value of multiboot register, value = %d\n",
+		       multiboot);
+		hang();
+	}
+
+	printf("SPL: Booting next image from 0x%x SPI offset\n",
+	       payload_offset);
+
+	return payload_offset;
+}
+#endif
+
+#if defined(CONFIG_SPL_FS_LOAD_PAYLOAD_NAME)
+int spl_mmc_get_uboot_payload_filename(char *filename, size_t len,
+				       const u32 boot_device)
+{
+	int ret;
+	u32 multiboot;
+
+	if (!filename)
+		return -1;
+
+	multiboot = multi_boot_get();
+
+	if (multiboot)
+		ret = snprintf(filename, len, "u-boot%04d.itb", multiboot);
+	else
+		ret = snprintf(filename, len, "u-boot.itb");
+
+	if (ret < 0) {
+		printf("Can't construct SPL payload filename");
+		return ret;
+	}
+
+	printf("SPL: Booting %s\n", filename);
+
+	return 0;
 }
 #endif

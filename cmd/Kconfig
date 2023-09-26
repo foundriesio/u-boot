@@ -519,6 +519,7 @@ config CMD_SPL_WRITE_SIZE
 
 config CMD_THOR_DOWNLOAD
 	bool "thor - TIZEN 'thor' download"
+	depends on CMD_USB
 	select DFU
 	help
 	  Implements the 'thor' download protocol. This is a way of
@@ -2676,6 +2677,18 @@ config CMD_AVB
 	    avb read_part_hex - read data from partition and output to stdout
 	    avb write_part - write data to partition
 	    avb verify - run full verification chain
+
+config CMD_FIOVB
+	bool "fiovb - Foundries.IO Verified Boot operations"
+	depends on FIOVB
+	default n
+	help
+	  Enables a "fiovb" command 
+	    fiovb init - initialize avb2 subsystem
+	    fiovb read_rb - read rollback index
+	    fiovb write_rb - write rollback index
+	    fiovb write_pvalue - write to RPMB
+	    fiovb read_pvalue - read from RPMB
 
 config CMD_STACKPROTECTOR_TEST
 	bool "Test command for stack protector"

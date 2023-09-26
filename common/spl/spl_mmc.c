@@ -118,8 +118,11 @@ int mmc_load_image_raw_sector(struct spl_image_info *spl_image,
 		load.read = h_spl_load_read;
 
 		ret = spl_load_imx_container(spl_image, &load, sector);
-	} else {
+	} else if (IS_ENABLED(CONFIG_SPL_LEGACY_IMAGE_SUPPORT)) {
 		ret = mmc_load_legacy(spl_image, bootdev, mmc, sector, header);
+	} else {
+		puts("mmc_load_image_raw_sector: unsupported image format\n");
+		return -1;
 	}
 
 end:
@@ -498,15 +501,35 @@ int spl_mmc_load(struct spl_image_info *spl_image,
 	return err;
 }
 
+#ifdef CONFIG_SPL_FS_LOAD_PAYLOAD_NAME
+int __weak spl_mmc_get_uboot_payload_filename(char *filename, size_t len,
+					      const u32 boot_device)
+{
+	if (!filename)
+		return -1;
+
+	strncpy(filename, CONFIG_SPL_FS_LOAD_PAYLOAD_NAME, len);
+
+	return 0;
+}
+#endif
+
+
 int spl_mmc_load_image(struct spl_image_info *spl_image,
 		       struct spl_boot_device *bootdev)
 {
-	return spl_mmc_load(spl_image, bootdev,
+
+	char arr[SPL_PAYLOAD_NAME_MAX] = { 0 };
+	char *payload_name = NULL;
+
 #ifdef CONFIG_SPL_FS_LOAD_PAYLOAD_NAME
-			    CONFIG_SPL_FS_LOAD_PAYLOAD_NAME,
-#else
-			    NULL,
+	if (!spl_mmc_get_uboot_payload_filename(arr, SPL_PAYLOAD_NAME_MAX,
+						bootdev->boot_device))
+		payload_name = arr;
+
 #endif
+	return spl_mmc_load(spl_image, bootdev,
+			    payload_name,
 #ifdef CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_PARTITION
 			    spl_mmc_boot_partition(bootdev->boot_device),
 #else
