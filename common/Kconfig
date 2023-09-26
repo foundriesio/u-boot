@@ -581,9 +581,24 @@ config BOOTFIRMWARE_INFO
 	help
 	  Display information about the boot firmware (version etc).
 
+config SPL_BOOTFIRMWARE_INFO
+	bool "Display information about the boot firmware in SPL"
+	depends on SPL_OF_CONTROL
+	default n
+	help
+	  Display information about the boot firmware (version etc) in SPL.
+
 config BOOTFIRMWARE_INFO_STRICT
 	bool "Enforce boot firmware display"
 	depends on BOOTFIRMWARE_INFO
+	default n
+	help
+	  If the info can not be accessed (e.g. no correct node in DTB),
+	  boot is aborted.
+
+config SPL_BOOTFIRMWARE_INFO_STRICT
+	bool "Enforce boot firmware display in SPL"
+	depends on SPL_BOOTFIRMWARE_INFO
 	default n
 	help
 	  If the info can not be accessed (e.g. no correct node in DTB),
