@@ -799,6 +799,15 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
 #endif
 #endif
 
+#ifdef CONFIG_SPL_BOOTFIRMWARE_INFO
+	ret = get_boot_firmware_info();
+	if (ret) {
+		printf(SPL_TPL_PROMPT
+		       "SPL firmware version detect failed (err=%d)\n", ret);
+		hang();
+	}
+#endif
+
 	if (IS_ENABLED(CONFIG_SPL_OS_BOOT) || CONFIG_IS_ENABLED(HANDOFF) ||
 	    IS_ENABLED(CONFIG_SPL_ATF) || IS_ENABLED(CONFIG_SPL_OPTEE))
 		dram_init_banksize();
