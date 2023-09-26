@@ -16,7 +16,6 @@ obj-y += board_f.o
 obj-y += board_r.o
 obj-$(CONFIG_DISPLAY_BOARDINFO) += board_info.o
 obj-$(CONFIG_DISPLAY_BOARDINFO_LATE) += board_info.o
-obj-$(CONFIG_BOOTFIRMWARE_INFO) += bootfirmware_info.o
 
 obj-$(CONFIG_FDT_SIMPLEFB) += fdt_simplefb.o
 obj-$(CONFIG_$(SPL_TPL_)OF_LIBFDT) += fdt_support.o
@@ -44,6 +43,7 @@ obj-$(CONFIG_CMDLINE) += cli_getch.o cli_readline.o cli_simple.o
 
 endif # !CONFIG_SPL_BUILD
 
+obj-$(CONFIG_$(SPL_TPL_)BOOTFIRMWARE_INFO) += bootfirmware_info.o
 obj-$(CONFIG_$(SPL_TPL_)BOOTSTAGE) += bootstage.o
 obj-$(CONFIG_$(SPL_TPL_)BLOBLIST) += bloblist.o
 

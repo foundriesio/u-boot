@@ -27,7 +27,9 @@ int __weak get_boot_firmware_info(void)
 	version = fdt_getprop(gd->fdt_blob, node, "bootfirmware-version", NULL);
 	if (version) {
 		printf("Boot firmware version: %s\n", version);
+#if CONFIG_IS_ENABLED(ENV_SUPPORT)
 		env_set("dt_bootfirmware_version", version);
+#endif
 	} else {
 		ret = -FDT_ERR_NOTFOUND;
 	}
