@@ -133,7 +133,7 @@ int authenticate_os_container(ulong addr)
 	u16 length;
 	struct boot_img_t *img;
 	unsigned long s, e;
-#ifdef CONFIG_ARMV8_CE_SHA256
+#if IS_ENABLED(CONFIG_ARMV8_CE_SHA256) && !defined(CONFIG_SPL_BUILD)
 	u8 hash_value[SHA256_SUM_LEN];
 #endif
 
@@ -185,7 +185,7 @@ int authenticate_os_container(ulong addr)
 
 		flush_dcache_range(s, e);
 
-#ifdef CONFIG_ARMV8_CE_SHA256
+#if IS_ENABLED(CONFIG_ARMV8_CE_SHA256) && !defined(CONFIG_SPL_BUILD)
 		if (((img->hab_flags & AHAB_HASH_TYPE_MASK) >> 8) == AHAB_HASH_TYPE_SHA256) {
 			sha256_csum_wd((void *)img->dst, img->size, hash_value, CHUNKSZ_SHA256);
 			err = memcmp(&img->hash, &hash_value, SHA256_SUM_LEN);
@@ -199,7 +199,7 @@ int authenticate_os_container(ulong addr)
 		ret = ahab_verify_cntr_image(img, i);
 		if (ret)
 			goto exit;
-#ifdef CONFIG_ARMV8_CE_SHA256
+#if IS_ENABLED(CONFIG_ARMV8_CE_SHA256) && !defined(CONFIG_SPL_BUILD)
 		}
 #endif
 	}
