@@ -2,6 +2,7 @@
 #include <common.h>
 #include <log.h>
 #include <asm/arch/sci/sci.h>
+#include <asm/mach-imx/image.h>
 #include <asm/mach-imx/sys_proto.h>
 #include <asm/global_data.h>
 #include <imx_sip.h>
@@ -179,6 +180,18 @@ bool check_secondary_cnt_set(unsigned long *set_off)
 		}
 	}
 	return false;
+}
+
+int boot_mode_getprisec(void)
+{
+	unsigned long set_off = 0;
+
+	return ((bool) check_secondary_cnt_set(&set_off)) ? 1 : 0;
+}
+
+void boot_mode_enable_secondary(bool enable)
+{
+	printf("This functionality isn't supported on iMX8 SoC");
 }
 
 #if !defined(CONFIG_SPL_BUILD) && defined(CONFIG_PSCI_BOARD_REBOOT)
