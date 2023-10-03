@@ -78,6 +78,8 @@ void board_init_f(ulong dummy)
 	/* setup GP timer */
 	timer_init();
 
+	spl_early_init();
+
 	/* UART clocks enabled and gd valid - init serial console */
 	preloader_console_init();
 
