@@ -296,7 +296,7 @@ static int _fastboot_parts_load_from_ptable(void)
 	 * which means that secondary boot image set should be flashed to boot1 partition to the
 	 * same offset the primary one
 	 */
-	if (is_imx8qm() || is_imx8qxp() || is_imx8ulp() || is_imx93()) {
+	if (is_imx8qm() || is_imx8qxp() || is_imx8ulp() || is_imx93() || is_imx8mp() || is_imx8mn()) {
 		ptable[PTN_BOOTLOADER_SECONDARY_INDEX].partition_id = FASTBOOT_MMC_BOOT1_PARTITION_ID;
 	} else {
 		ptable[PTN_BOOTLOADER_SECONDARY_INDEX].partition_id = boot_partition;
@@ -327,7 +327,7 @@ static int _fastboot_parts_load_from_ptable(void)
 	 * which means that secondary boot image set should be flashed to boot1 partition to the
 	 * same offset the primary one
 	 */
-	if (is_imx8qm() || is_imx8qxp() || is_imx8ulp() || is_imx93()) {
+	if (is_imx8qm() || is_imx8qxp() || is_imx8ulp() || is_imx93() || is_imx8mp() || is_imx8mn()) {
 		ptable[PTN_BOOTLOADER2_SECONDARY_INDEX].partition_id = FASTBOOT_MMC_BOOT1_PARTITION_ID;
 	} else {
 		ptable[PTN_BOOTLOADER2_SECONDARY_INDEX].partition_id = boot_partition;
