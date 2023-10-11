@@ -554,11 +554,6 @@ unsigned long spl_mmc_get_uboot_raw_sector(struct mmc *mmc,
 {
 	int boot_secondary = boot_mode_getprisec();
 	unsigned long offset = CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR;
-#if defined(CONFIG_IMX8MN)
-	#define UBOOT_MMC2_RAW_SECTOR_OFFSET 0x40
-	if (spl_boot_device() == BOOT_DEVICE_MMC2)
-			offset -= UBOOT_MMC2_RAW_SECTOR_OFFSET;
-#endif
 	if (boot_secondary) {
 		offset += CONFIG_SECONDARY_BOOT_SECTOR_OFFSET;
 		printf("SPL: Booting secondary boot path: using 0x%lx offset "
