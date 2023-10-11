@@ -151,6 +151,11 @@ static int _fastboot_parts_add_ptable_entry(int ptable_index,
 		strcpy(ptable[ptable_index].fstype, "f2fs");
 	else
 		strcpy(ptable[ptable_index].fstype, "raw");
+
+	debug("Add ptable entry [%d]: 0x%lx, 0x%lx, %d, %d, %s, %s\n",
+	      ptable_index, info.start, info.size,
+	      mmc_partition_index, mmc_dos_partition_index,
+	      ptable[ptable_index].name, ptable[ptable_index].fstype);
 	return 0;
 }
 
