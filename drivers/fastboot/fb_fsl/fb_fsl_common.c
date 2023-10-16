@@ -367,7 +367,7 @@ static int _fastboot_setup_dev(int *switched)
 
 void fastboot_setup(void)
 {
-	int sw, ret;
+	int sw = 1, ret;
 	struct tag_serialnr serialnr = {
 		.high = 0,
 		.low = 0,
