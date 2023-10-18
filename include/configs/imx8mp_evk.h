@@ -22,10 +22,24 @@
 #endif
 
 #ifdef CONFIG_DISTRO_DEFAULTS
-#define BOOT_TARGET_DEVICES(func) \
-	func(USB, usb, 0) \
+
+#if CONFIG_IS_ENABLED(CMD_MMC)
+#define BOOT_TARGET_MMC(func) \
 	func(MMC, mmc, 1) \
 	func(MMC, mmc, 2)
+#else
+#define BOOT_TARGET_MMC(func)
+#endif
+
+#if CONFIG_IS_ENABLED(CMD_USB)
+#define BOOT_TARGET_USB(func) func(USB, usb, 0)
+#else
+#define BOOT_TARGET_USB(func)
+#endif
+
+#define BOOT_TARGET_DEVICES(func) \
+	BOOT_TARGET_MMC(func) \
+	BOOT_TARGET_USB(func)
 
 #include <config_distro_bootcmd.h>
 #else
