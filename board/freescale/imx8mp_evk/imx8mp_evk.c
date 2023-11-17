@@ -305,11 +305,13 @@ static struct dwc3_device dwc3_device_data = {
 	.power_down_scale = 2,
 };
 
+#if !CONFIG_IS_ENABLED(DM_USB_GADGET)
 int usb_gadget_handle_interrupts(int index)
 {
 	dwc3_uboot_handle_interrupt(index);
 	return 0;
 }
+#endif
 
 static void dwc3_nxp_usb_phy_init(struct dwc3_device *dwc3)
 {
