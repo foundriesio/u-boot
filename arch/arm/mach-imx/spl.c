@@ -417,7 +417,7 @@ void *spl_load_simple_fit_fix_load(const void *fit)
 	unsigned long size;
 	u8 *tmp = (u8 *)fit;
 
-	if (IS_ENABLED(CONFIG_IMX_HAB)) {
+	if (IS_ENABLED(CONFIG_SPL_IMX_HAB)) {
 		if (IS_ENABLED(CONFIG_IMX_SPL_FIT_FDT_SIGNATURE)) {
 			u32 offset = ALIGN(fdt_totalsize(fit), 0x1000);
 
@@ -533,7 +533,7 @@ int board_spl_fit_post_load(const void *fit, struct spl_image_info *spl_image)
 	int ret;
 #endif
 
-	if (CONFIG_IS_ENABLED(IMX_HAB) && !(spl_image->flags & SPL_FIT_BYPASS_POST_LOAD)) {
+	if (IS_ENABLED(CONFIG_SPL_IMX_HAB) && !(spl_image->flags & SPL_FIT_BYPASS_POST_LOAD)) {
 		u32 offset = ALIGN(fdt_totalsize(fit), 0x1000);
 
 		if (imx_hab_authenticate_image((uintptr_t)fit,
