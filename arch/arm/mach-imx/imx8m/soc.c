@@ -41,7 +41,7 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-#if defined(CONFIG_IMX_HAB) || defined(CONFIG_AVB_ATX) || defined(CONFIG_IMX_TRUSTY_OS)
+#if CONFIG_IS_ENABLED(IMX_HAB) || defined(CONFIG_AVB_ATX) || defined(CONFIG_IMX_TRUSTY_OS)
 struct imx_sec_config_fuse_t const imx_sec_config_fuse = {
 	.bank = 1,
 	.word = 3,
@@ -597,7 +597,7 @@ static void imx8m_setup_csu_tzasc(void)
 	}
 }
 
-#if defined(CONFIG_IMX_HAB) && defined(CONFIG_IMX8MQ)
+#if CONFIG_IS_ENABLED(IMX_HAB) && defined(CONFIG_IMX8MQ)
 static bool is_hdmi_fused(void) {
 	struct ocotp_regs *ocotp = (struct ocotp_regs *)OCOTP_BASE_ADDR;
 	struct fuse_bank *bank = &ocotp->bank[1];
@@ -670,7 +670,7 @@ int arch_cpu_init(void)
 		if (!IS_ENABLED(CONFIG_IMX_WATCHDOG))
 			imx_set_wdog_powerdown(false);
 
-#if defined(CONFIG_IMX_HAB) && defined(CONFIG_IMX8MQ)
+#if CONFIG_IS_ENABLED(IMX_HAB) && defined(CONFIG_IMX8MQ)
 		secure_lockup();
 #endif
 		if (is_imx8md() || is_imx8mmd() || is_imx8mmdl() || is_imx8mms() ||

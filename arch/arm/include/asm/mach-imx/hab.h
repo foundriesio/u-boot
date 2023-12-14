@@ -137,7 +137,7 @@ struct imx_sec_config_fuse_t {
 	int word;
 };
 
-#if defined(CONFIG_IMX_HAB)
+#if CONFIG_IS_ENABLED(IMX_HAB)
 extern struct imx_sec_config_fuse_t const imx_sec_config_fuse;
 #endif
 
@@ -235,5 +235,4 @@ typedef void hapi_clock_init_t(void);
 int imx_hab_authenticate_image(uint32_t ddr_start, uint32_t image_size,
 			       uint32_t ivt_offset);
 bool imx_hab_is_enabled(void);
-
 #endif
