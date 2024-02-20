@@ -5,6 +5,9 @@ menu "Boot images"
 config ANDROID_BOOT_IMAGE
 	bool "Enable support for Android Boot Images"
 	default y if FASTBOOT
+	select HAS_CAAM if IMX8ULP
+	select FSL_CAAM if IMX8ULP
+	select FSL_BLOB if IMX8ULP
 	help
 	  This enables support for booting images which use the Android
 	  image format header.
