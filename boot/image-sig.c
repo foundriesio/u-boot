@@ -26,6 +26,7 @@ struct checksum_algo checksum_algos[] = {
 		.calculate = hash_calculate,
 	},
 #endif
+#if CONFIG_IS_ENABLED(SHA256)
 	{
 		.name = "sha256",
 		.checksum_len = SHA256_SUM_LEN,
@@ -33,6 +34,7 @@ struct checksum_algo checksum_algos[] = {
 		.der_prefix = sha256_der_prefix,
 		.calculate = hash_calculate,
 	},
+#endif
 #if CONFIG_IS_ENABLED(SHA384)
 	{
 		.name = "sha384",
