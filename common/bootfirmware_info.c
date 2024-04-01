@@ -19,8 +19,9 @@ int __weak get_boot_firmware_info(void)
 
 	node = fdt_node_offset_by_compatible(gd->fdt_blob, -1, COMPATIBLE);
 	if (node < 0) {
-		printf("Can't find node with compatible = \"" COMPATIBLE
-		       "\"\n");
+		if (CONFIG_IS_ENABLED(BOOTFIRMWARE_INFO_STRICT))
+			printf("Can't find node with compatible = \"" COMPATIBLE
+			       "\"\n");
 		ret = -FDT_ERR_NOTFOUND;
 		goto out;
 	}
